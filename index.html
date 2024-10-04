@@ -1,0 +1,2566 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Climate Change Game</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            color: #333;
+            margin: 0;
+            padding: 20px;
+            background-image: url('https://wmo.int/sites/default/files/2023-09/AdobeStock_543104806.jpeg');
+            background-size: cover;
+            background-position: center;
+        }
+
+        header {
+            background-color: rgba(46, 139, 86, 0.8);
+            color: white;
+            padding: 10px 0;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .logo {
+            width: 100px;
+            /* حجم اللوجو */
+            height: auto;
+            margin-right: 10px;
+        }
+
+        section {
+            margin: 20px 0;
+            padding: 20px;
+            border: 1px solid #2e8b57;
+            border-radius: 5px;
+            background-color: rgba(255, 255, 255, 0.8);
+        }
+
+        h2 {
+            color: #2e8b57;
+        }
+
+        .country-card {
+            border: 2px solid #2e8b57;
+            border-radius: 5px;
+            margin: 10px;
+            padding: 10px;
+            display: inline-block;
+            text-align: center;
+            transition: transform 0.3s;
+            cursor: pointer;
+            background-color: #e8f5e9;
+        }
+
+        .country-card:hover {
+            transform: scale(1.05);
+        }
+
+        .country-flag {
+            width: 100px;
+            height: auto;
+        }
+
+        .intro,
+        .team-input {
+            margin: 20px 0;
+            padding: 20px;
+            border: 1px solid #2e8b57;
+            border-radius: 5px;
+            background-color: #e8f5e9;
+        }
+
+        .choices {
+            margin-top: 10px;
+        }
+
+        .choice-button,
+        .start-button,
+        .restart-button,
+        .end-button {
+            background-color: #2e8b57;
+            color: white;
+            border: none;
+            padding: 10px;
+            margin: 5px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+        .choice-button:hover,
+        .start-button:hover,
+        .restart-button:hover,
+        .end-button:hover {
+            background-color: #256e4d;
+        }
+
+        .score {
+            margin-top: 20px;
+            font-size: 1.2em;
+            color: #2e8b57;
+        }
+
+        input[type="text"] {
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            width: calc(100% - 22px);
+            margin: 10px 0;
+        }
+
+        .issues {
+            margin-top: 10px;
+            color: #555;
+        }
+
+        .start-button {
+            display: block;
+            margin: 20px auto;
+        }
+
+        button {
+            margin: 10px;
+            padding: 15px 30px;
+            font-size: 20px;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <img src="https://cdn.alsaudinews.com/wp-content/uploads/2022/10/climate-change-backgrounder.jpg"
+            alt="Climate Change Logo" class="logo">
+        <h1>Climate Change Game</h1>
+    </header>
+
+    <section id="intro-section">
+        <h2>Introduction</h2>
+        <div class="intro">
+            <p>
+                Welcome to the Climate Change Game! This game will help you understand the importance of sustainable
+                development and how our decisions can impact the environment. You will take on the role of
+                decision-makers in your area, making choices that will either help or hinder efforts to combat climate
+                change.
+                Together, we can learn how to create a more sustainable future for our planet!
+            </p>
+            <button class="start-button" onclick="showTeamInput()">Start</button>
+        </div>
+    </section>
+
+    <section id="team-section" style="display:none;">
+        <h2>Enter Team Name</h2>
+        <div class="team-input">
+            <input type="text" id="team-name" placeholder="Enter your team name">
+            <button class="start-button" onclick="setTeamName()">Next</button>
+        </div>
+    </section>
+
+    <section id="country-selection-section" style="display:none;">
+        <h2>Select a Country</h2>
+        <div id="countries-container"></div>
+    </section>
+
+    <section id="game-section" style="display:none;">
+        <h2 id="scenario-title">Scenario Title</h2>
+        <div id="scenario-description" class="scenario">Scenario Description</div>
+        <div class="choices" id="choices-container"></div>
+        <div class="score" id="score-container">Score: 100</div>
+    </section>
+
+    <section id="end-section" style="display:none;">
+        <h2>Game Over</h2>
+        <div id="end-message"></div>
+        <div id="final-score"></div>
+        <button class="restart-button" onclick="restartGame()">Restart Game</button>
+        <button class="end-button" onclick="finishGame()">End Game</button>
+    </section>
+
+    <script>
+
+
+
+
+
+        const countries = [
+            {
+                name: "Egypt",
+                flag: "https://upload.wikimedia.org/wikipedia/commons/f/fe/Flag_of_Egypt.svg",
+                issues: ["Water Scarcity", "Air Pollution", "Climate Change Effects"]
+            },
+            {
+                name: "India",
+                flag: "https://upload.wikimedia.org/wikipedia/en/4/41/Flag_of_India.svg",
+                issues: ["Air Pollution", "Deforestation", "Extreme Weather Events"]
+            },
+            {
+                name: "Brazil",
+                flag: "https://upload.wikimedia.org/wikipedia/en/0/05/Flag_of_Brazil.svg",
+                issues: ["Deforestation", "Biodiversity Loss", "Climate Change"]
+            },
+            {
+                name: "USA",
+                flag: "https://upload.wikimedia.org/wikipedia/en/a/a4/Flag_of_the_United_States.svg",
+                issues: ["Wildfires", "Hurricanes", "Air Quality"]
+            },
+            {
+                name: "China",
+                flag: "https://upload.wikimedia.org/wikipedia/commons/thumb/f/fa/Flag_of_the_People%27s_Republic_of_China.svg/1200px-Flag_of_the_People%27s_Republic_of_China.svg.png",
+                issues: ["Air Pollution", "Water Shortages", "Extreme Weather"]
+            },
+            {
+                name: "Nigeria",
+                flag: "https://upload.wikimedia.org/wikipedia/commons/thumb/7/79/Flag_of_Nigeria.svg/800px-Flag_of_Nigeria.svg.png",
+                issues: ["Flooding", "Deforestation", "Food Insecurity"]
+            },
+            {
+                name: "Australia",
+                flag: "https://upload.wikimedia.org/wikipedia/commons/b/b9/Flag_of_Australia.svg",
+                issues: ["Coral Bleaching", "Bushfires", "Drought"]
+            },
+            {
+                name: "Germany",
+                flag: "https://upload.wikimedia.org/wikipedia/en/b/ba/Flag_of_Germany.svg",
+                issues: ["Energy Transition", "Air Pollution", "Waste Management"]
+            },
+            {
+                name: "Japan",
+                flag: "https://upload.wikimedia.org/wikipedia/commons/9/9e/Flag_of_Japan.svg",
+                issues: ["Natural Disasters", "Nuclear Energy", "Pollution"]
+            },
+            {
+                name: "Russia",
+                flag: "https://upload.wikimedia.org/wikipedia/en/f/f3/Flag_of_Russia.svg",
+                issues: ["Permafrost Thawing", "Oil Dependency", "Wildfires"]
+            },
+            {
+                name: "Canada",
+                flag: "https://upload.wikimedia.org/wikipedia/en/c/cf/Flag_of_Canada.svg",
+                issues: ["Wildfires", "Melting Glaciers", "Water Pollution"]
+            },
+            {
+                name: "Mexico",
+                flag: "https://upload.wikimedia.org/wikipedia/commons/f/fc/Flag_of_Mexico.svg",
+                issues: ["Air Pollution", "Deforestation", "Water Scarcity"]
+            },
+            {
+                name: "Indonesia",
+                flag: "https://upload.wikimedia.org/wikipedia/commons/9/9f/Flag_of_Indonesia.svg",
+                issues: ["Deforestation", "Forest Fires", "Climate Change Effects"]
+            },
+            {
+                name: "South Africa",
+                flag: "https://upload.wikimedia.org/wikipedia/commons/a/af/Flag_of_South_Africa.svg",
+                issues: ["Water Scarcity", "Air Pollution", "Biodiversity Loss"]
+            },
+            {
+                name: "Italy",
+                flag: "https://upload.wikimedia.org/wikipedia/en/0/03/Flag_of_Italy.svg",
+                issues: ["Flooding", "Air Quality", "Waste Management"]
+            },
+            {
+                name: "South Korea",
+                flag: "https://upload.wikimedia.org/wikipedia/commons/0/09/Flag_of_South_Korea.svg",
+                issues: ["Air Pollution", "Waste Management", "Natural Disasters"]
+            },
+            {
+                name: "Argentina",
+                flag: "https://upload.wikimedia.org/wikipedia/commons/1/1a/Flag_of_Argentina.svg",
+                issues: ["Deforestation", "Climate Change", "Biodiversity Loss"]
+            },
+            {
+                name: "France",
+                flag: "https://upload.wikimedia.org/wikipedia/en/c/c3/Flag_of_France.svg",
+                issues: ["Air Pollution", "Waste Management", "Energy Transition"]
+            },
+            {
+                name: "Philippines",
+                flag: "https://upload.wikimedia.org/wikipedia/commons/9/99/Flag_of_the_Philippines.svg",
+                issues: ["Natural Disasters", "Flooding", "Coral Reef Destruction"]
+            },
+            {
+                name: "Turkey",
+                flag: "https://upload.wikimedia.org/wikipedia/commons/b/b4/Flag_of_Turkey.svg",
+                issues: ["Water Scarcity", "Air Pollution", "Deforestation"]
+            },
+        ];
+
+        const scenarios = {
+            "Egypt": [
+                {
+                    title: "Scenario 1: Investing in Renewable Energy",
+                    description: "You decided to invest in renewable energy sources like solar energy.",
+                    choices: [
+                        { text: "Expand solar and wind energy projects", points: 15, result: "win" },
+                        { text: "Subsidize fossil fuel energy instead", points: -10, result: "lose" },
+                        { text: "Focus on research for advanced nuclear energy", points: 5, result: "neutral" },
+                        { text: "Encourage citizens to reduce energy consumption", points: 10, result: "win" }
+                    ]
+                },
+                {
+                    title: "Scenario 2: Water Conservation",
+                    description: "You implement water conservation measures in agriculture. What is your approach?",
+                    choices: [
+                        { text: "Introduce drip irrigation systems", points: 15, result: "win" },
+                        { text: "Ban excessive water usage without alternatives", points: -10, result: "lose" },
+                        { text: "Encourage rainwater harvesting", points: 10, result: "win" },
+                        { text: "Rely on desalination for water supply", points: 5, result: "neutral" }
+                    ]
+                },
+                {
+                    title: "Scenario 3: Air Quality Improvement",
+                    description: "You enforce stricter emissions standards for industries. What is your strategy?",
+                    choices: [
+                        { text: "Introduce carbon taxes on industries", points: 15, result: "win" },
+                        { text: "Provide subsidies for pollution control technologies", points: 10, result: "win" },
+                        { text: "Increase public awareness on air pollution", points: 5, result: "neutral" },
+                        { text: "Loosen restrictions to attract more investment", points: -10, result: "lose" }
+                    ]
+                },
+                {
+                    title: "Scenario 4: Afforestation Project",
+                    description: "You launch a large-scale afforestation project. How do you proceed?",
+                    choices: [
+                        { text: "Plant fast-growing trees for quick results", points: 10, result: "neutral" },
+                        { text: "Plant a mix of native species", points: 15, result: "win" },
+                        { text: "Rely on volunteers for planting", points: 5, result: "neutral" },
+                        { text: "Cut the project budget for other priorities", points: -10, result: "lose" }
+                    ]
+                },
+                {
+                    title: "Scenario 5: Renewable Transportation",
+                    description: "You promote the use of electric vehicles. What is your focus?",
+                    choices: [
+                        { text: "Offer subsidies for electric car buyers", points: 15, result: "win" },
+                        { text: "Invest in public charging stations", points: 10, result: "win" },
+                        { text: "Promote hybrid vehicles instead", points: 5, result: "neutral" },
+                        { text: "Encourage the use of gasoline cars for faster implementation", points: -10, result: "lose" }
+                    ]
+                },
+                {
+                    title: "Scenario 6: Eco-friendly Building Materials",
+                    description: "You encourage the use of eco-friendly building materials in construction. What is your strategy?",
+                    choices: [
+                        { text: "Promote recycled materials", points: 15, result: "win" },
+                        { text: "Use locally sourced materials", points: 10, result: "win" },
+                        { text: "Focus on short-term cost savings with traditional materials", points: -10, result: "lose" },
+                        { text: "Offer incentives for green-certified buildings", points: 5, result: "neutral" }
+                    ]
+                },
+                {
+                    title: "Scenario 7: Sustainable Tourism",
+                    description: "You promote sustainable tourism to protect natural resources. What is your approach?",
+                    choices: [
+                        { text: "Develop eco-friendly tourist facilities", points: 15, result: "win" },
+                        { text: "Limit tourist numbers in sensitive areas", points: 10, result: "win" },
+                        { text: "Focus on advertising tourism without restrictions", points: -10, result: "lose" },
+                        { text: "Promote responsible tourism through education", points: 5, result: "neutral" }
+                    ]
+                },
+                {
+                    title: "Scenario 8: Urban Green Spaces",
+                    description: "You plan to expand green spaces in cities to improve air quality. How do you proceed?",
+                    choices: [
+                        { text: "Create more parks and urban forests", points: 15, result: "win" },
+                        { text: "Turn vacant lots into community gardens", points: 10, result: "win" },
+                        { text: "Prioritize commercial development over green spaces", points: -10, result: "lose" },
+                        { text: "Rely on private developers for funding", points: 5, result: "neutral" }
+                    ]
+                },
+                {
+                    title: "Scenario 9: Plastic Waste Reduction",
+                    description: "You implement policies to reduce plastic waste. What is your plan?",
+                    choices: [
+                        { text: "Ban single-use plastics", points: 15, result: "win" },
+                        { text: "Encourage recycling through incentives", points: 10, result: "win" },
+                        { text: "Rely on voluntary industry regulations", points: 5, result: "neutral" },
+                        { text: "Promote plastic alternatives without enforcing bans", points: -10, result: "lose" }
+                    ]
+                },
+                {
+                    title: "Scenario 10: Coastal Protection",
+                    description: "You invest in protecting coastal areas from rising sea levels. What is your strategy?",
+                    choices: [
+                        { text: "Build sea walls and barriers", points: 15, result: "win" },
+                        { text: "Restore mangrove forests along the coast", points: 10, result: "win" },
+                        { text: "Encourage coastal development for economic growth", points: -10, result: "lose" },
+                        { text: "Invest in coastal monitoring and early warning systems", points: 5, result: "neutral" }
+                    ]
+                },
+
+            ],
+            "Russia": [
+                {
+                    "title": "Scenario 1: Energy Efficiency in Cold Climates",
+                    "description": "You focus on making buildings more energy-efficient during harsh winters.",
+                    "choices": [
+                        { "text": "Invest in insulation and energy-saving technologies", "points": 15, "result": "win" },
+                        { "text": "Subsidize heating costs without infrastructure improvements", "points": -10, "result": "lose" },
+                        { "text": "Encourage individual responsibility for energy savings", "points": 5, "result": "neutral" },
+                        { "text": "Focus on nuclear energy for heating", "points": 10, "result": "win" }
+                    ]
+                },
+                {
+                    "title": "Scenario 2: Winter Agriculture Solutions",
+                    "description": "You explore ways to extend the growing season despite harsh winters.",
+                    "choices": [
+                        { "text": "Invest in greenhouses with advanced technology", "points": 15, "result": "win" },
+                        { "text": "Focus on traditional farming despite the climate", "points": -10, "result": "lose" },
+                        { "text": "Promote winter crop development", "points": 10, "result": "win" },
+                        { "text": "Rely on food imports during winter", "points": 5, "result": "neutral" }
+                    ]
+                },
+                {
+                    "title": "Scenario 3: Renewable Energy in Cold Regions",
+                    "description": "You develop renewable energy solutions that can operate efficiently in cold weather.",
+                    "choices": [
+                        { "text": "Expand wind energy in cold, remote regions", "points": 15, "result": "win" },
+                        { "text": "Invest in hydroelectric power from frozen rivers", "points": 10, "result": "win" },
+                        { "text": "Rely on coal for consistent energy supply", "points": -10, "result": "lose" },
+                        { "text": "Develop geothermal energy solutions", "points": 5, "result": "neutral" }
+                    ]
+                },
+                {
+                    "title": "Scenario 4: Protecting Permafrost",
+                    "description": "You take action to protect the melting permafrost, which can release trapped greenhouse gases.",
+                    "choices": [
+                        { "text": "Launch research on permafrost preservation", "points": 15, "result": "win" },
+                        { "text": "Ignore the issue in favor of industrial development", "points": -10, "result": "lose" },
+                        { "text": "Promote afforestation to stabilize soil", "points": 10, "result": "win" },
+                        { "text": "Rely on natural adaptation of ecosystems", "points": 5, "result": "neutral" }
+                    ]
+                },
+                {
+                    "title": "Scenario 5: Winter Transportation",
+                    "description": "You aim to keep transportation efficient during harsh winters.",
+                    "choices": [
+                        { "text": "Invest in heated roads and rail systems", "points": 15, "result": "win" },
+                        { "text": "Use traditional road maintenance methods", "points": -10, "result": "lose" },
+                        { "text": "Develop winter-resistant electric vehicles", "points": 10, "result": "win" },
+                        { "text": "Focus on improving public transit for winter months", "points": 5, "result": "neutral" }
+                    ]
+                },
+                {
+                    "title": "Scenario 6: Wildfire Prevention in Summer",
+                    "description": "You address the increased risk of wildfires during Russia’s dry, hot summers.",
+                    "choices": [
+                        { "text": "Invest in early detection and firefighting technologies", "points": 15, "result": "win" },
+                        { "text": "Rely on local communities to handle wildfires", "points": -10, "result": "lose" },
+                        { "text": "Promote controlled burns to prevent large-scale fires", "points": 10, "result": "win" },
+                        { "text": "Focus on forest preservation over proactive fire management", "points": 5, "result": "neutral" }
+                    ]
+                },
+                {
+                    "title": "Scenario 7: Sustainable Fishing in Cold Waters",
+                    "description": "You regulate the fishing industry to prevent overfishing in Russian waters.",
+                    "choices": [
+                        { "text": "Implement strict fishing quotas", "points": 15, "result": "win" },
+                        { "text": "Allow industrial fishing without restrictions", "points": -10, "result": "lose" },
+                        { "text": "Promote aquaculture as an alternative", "points": 10, "result": "win" },
+                        { "text": "Focus on increasing fishing for economic growth", "points": 5, "result": "neutral" }
+                    ]
+                },
+                {
+                    "title": "Scenario 8: Urban Heating Systems",
+                    "description": "You modernize urban heating systems to make them more efficient.",
+                    "choices": [
+                        { "text": "Upgrade district heating systems", "points": 15, "result": "win" },
+                        { "text": "Subsidize heating bills without infrastructure updates", "points": -10, "result": "lose" },
+                        { "text": "Promote home-based heating solutions", "points": 10, "result": "win" },
+                        { "text": "Focus on short-term fixes for the winter season", "points": 5, "result": "neutral" }
+                    ]
+                },
+                {
+                    "title": "Scenario 9: Arctic Development",
+                    "description": "You plan to develop the Russian Arctic for economic and strategic purposes.",
+                    "choices": [
+                        { "text": "Invest in sustainable Arctic infrastructure", "points": 15, "result": "win" },
+                        { "text": "Focus on oil and gas exploration in the Arctic", "points": -10, "result": "lose" },
+                        { "text": "Promote scientific research on Arctic climate change", "points": 10, "result": "win" },
+                        { "text": "Rely on traditional resource extraction methods", "points": 5, "result": "neutral" }
+                    ]
+                },
+                {
+                    "title": "Scenario 10: Cold-resistant Crops",
+                    "description": "You research and promote cold-resistant crops for food security.",
+                    "choices": [
+                        { "text": "Invest in genetic engineering of crops", "points": 15, "result": "win" },
+                        { "text": "Rely on traditional crop varieties", "points": -10, "result": "lose" },
+                        { "text": "Promote local farming communities to adapt", "points": 10, "result": "win" },
+                        { "text": "Focus on food imports to meet demand", "points": 5, "result": "neutral" }
+                    ]
+                }
+            ],
+            "USA": [
+                {
+                    "title": "Scenario 1: Renewable Energy Transition",
+                    "description": "You aim to transition the country to renewable energy sources. What is your first step?",
+                    "choices": [
+                        { "text": "Invest heavily in solar and wind energy", "points": 15, "result": "win" },
+                        { "text": "Continue relying on coal and gas", "points": -10, "result": "lose" },
+                        { "text": "Implement tax incentives for clean energy", "points": 10, "result": "win" },
+                        { "text": "Delay renewable energy initiatives", "points": -5, "result": "neutral" }
+                    ]
+                },
+                {
+                    "title": "Scenario 2: Climate Resilience Infrastructure",
+                    "description": "You need to enhance infrastructure to withstand climate impacts. How do you proceed?",
+                    "choices": [
+                        { "text": "Upgrade infrastructure for extreme weather", "points": 15, "result": "win" },
+                        { "text": "Neglect infrastructure improvements", "points": -10, "result": "lose" },
+                        { "text": "Focus on short-term fixes", "points": 5, "result": "neutral" },
+                        { "text": "Invest in smart city technologies", "points": 10, "result": "win" }
+                    ]
+                },
+                {
+                    "title": "Scenario 3: Urban Air Quality Improvement",
+                    "description": "You want to improve air quality in urban areas. What is your approach?",
+                    "choices": [
+                        { "text": "Implement strict emissions regulations", "points": 15, "result": "win" },
+                        { "text": "Promote electric public transportation", "points": 10, "result": "win" },
+                        { "text": "Encourage carpooling and biking", "points": 5, "result": "neutral" },
+                        { "text": "Loosen regulations to attract businesses", "points": -10, "result": "lose" }
+                    ]
+                },
+                {
+                    "title": "Scenario 4: Water Conservation Measures",
+                    "description": "With increasing droughts, how do you manage water resources?",
+                    "choices": [
+                        { "text": "Promote water-efficient technologies", "points": 15, "result": "win" },
+                        { "text": "Ignore drought warnings", "points": -10, "result": "lose" },
+                        { "text": "Encourage public awareness campaigns", "points": 10, "result": "win" },
+                        { "text": "Invest in desalination plants", "points": 5, "result": "neutral" }
+                    ]
+                },
+                {
+                    "title": "Scenario 5: Protecting Biodiversity",
+                    "description": "You want to enhance biodiversity in national parks. What is your strategy?",
+                    "choices": [
+                        { "text": "Implement conservation programs", "points": 15, "result": "win" },
+                        { "text": "Focus on recreational developments", "points": -10, "result": "lose" },
+                        { "text": "Support local wildlife initiatives", "points": 10, "result": "win" },
+                        { "text": "Ignore habitat restoration efforts", "points": -5, "result": "neutral" }
+                    ]
+                },
+                {
+                    "title": "Scenario 6: Sustainable Agriculture Practices",
+                    "description": "You aim to promote sustainable agriculture. What is your first step?",
+                    "choices": [
+                        { "text": "Incentivize organic farming", "points": 15, "result": "win" },
+                        { "text": "Continue traditional farming methods", "points": -10, "result": "lose" },
+                        { "text": "Support local farmers' markets", "points": 10, "result": "win" },
+                        { "text": "Ignore the impact of pesticides", "points": -5, "result": "neutral" }
+                    ]
+                },
+                {
+                    "title": "Scenario 7: Climate Education Initiatives",
+                    "description": "You want to educate the public about climate change. How do you start?",
+                    "choices": [
+                        { "text": "Launch a national climate awareness campaign", "points": 15, "result": "win" },
+                        { "text": "Limit climate education in schools", "points": -10, "result": "lose" },
+                        { "text": "Partner with NGOs for outreach", "points": 10, "result": "win" },
+                        { "text": "Focus on economic growth instead", "points": -5, "result": "neutral" }
+                    ]
+                },
+                {
+                    "title": "Scenario 8: Enhancing Public Transportation",
+                    "description": "You aim to improve public transportation systems. What is your focus?",
+                    "choices": [
+                        { "text": "Invest in electric buses and trains", "points": 15, "result": "win" },
+                        { "text": "Neglect public transportation funding", "points": -10, "result": "lose" },
+                        { "text": "Encourage ride-sharing programs", "points": 10, "result": "win" },
+                        { "text": "Focus solely on road infrastructure", "points": -5, "result": "neutral" }
+                    ]
+                },
+                {
+                    "title": "Scenario 9: Reducing Plastic Waste",
+                    "description": "You want to tackle plastic pollution. What is your plan?",
+                    "choices": [
+                        { "text": "Ban single-use plastics", "points": 15, "result": "win" },
+                        { "text": "Encourage recycling initiatives", "points": 10, "result": "win" },
+                        { "text": "Promote awareness on plastic usage", "points": 5, "result": "neutral" },
+                        { "text": "Focus on industry self-regulation", "points": -10, "result": "lose" }
+                    ]
+                },
+                {
+                    "title": "Scenario 10: Climate Research Funding",
+                    "description": "You aim to boost funding for climate research. How do you prioritize?",
+                    "choices": [
+                        { "text": "Increase federal research grants", "points": 15, "result": "win" },
+                        { "text": "Cut funding for climate research", "points": -10, "result": "lose" },
+                        { "text": "Support collaborations with universities", "points": 10, "result": "win" },
+                        { "text": "Focus on short-term projects", "points": -5, "result": "neutral" }
+                    ]
+                }
+            ], "Nigeria": [
+                {
+                    "title": "Scenario 1: Managing Oil Resources",
+                    "description": "You are faced with the challenge of managing Nigeria's oil resources sustainably. What is your approach?",
+                    "choices": [
+                        { "text": "Invest in cleaner extraction technologies", "points": 15, "result": "win" },
+                        { "text": "Prioritize short-term profits over sustainability", "points": -10, "result": "lose" },
+                        { "text": "Promote transparency in the oil sector", "points": 10, "result": "win" },
+                        { "text": "Ignore environmental regulations", "points": -5, "result": "neutral" }
+                    ]
+                },
+                {
+                    "title": "Scenario 2: Agriculture and Climate Change",
+                    "description": "With increasing droughts, how do you support farmers in Nigeria?",
+                    "choices": [
+                        { "text": "Introduce drought-resistant crop varieties", "points": 15, "result": "win" },
+                        { "text": "Continue traditional farming methods without adaptation", "points": -10, "result": "lose" },
+                        { "text": "Provide training on climate-smart agriculture", "points": 10, "result": "win" },
+                        { "text": "Neglect agricultural research funding", "points": -5, "result": "neutral" }
+                    ]
+                },
+                {
+                    "title": "Scenario 3: Renewable Energy Development",
+                    "description": "You aim to expand renewable energy in Nigeria. What is your strategy?",
+                    "choices": [
+                        { "text": "Invest in solar energy projects", "points": 15, "result": "win" },
+                        { "text": "Continue reliance on fossil fuels", "points": -10, "result": "lose" },
+                        { "text": "Implement incentives for renewable energy adoption", "points": 10, "result": "win" },
+                        { "text": "Delay renewable energy initiatives", "points": -5, "result": "neutral" }
+                    ]
+                },
+                {
+                    "title": "Scenario 4: Water Resource Management",
+                    "description": "With water scarcity issues, how will you manage water resources?",
+                    "choices": [
+                        { "text": "Promote rainwater harvesting systems", "points": 15, "result": "win" },
+                        { "text": "Ignore water conservation efforts", "points": -10, "result": "lose" },
+                        { "text": "Implement water recycling programs", "points": 10, "result": "win" },
+                        { "text": "Focus solely on improving irrigation", "points": -5, "result": "neutral" }
+                    ]
+                },
+                {
+                    "title": "Scenario 5: Biodiversity Protection",
+                    "description": "You want to enhance biodiversity in Nigeria. What is your approach?",
+                    "choices": [
+                        { "text": "Implement conservation programs for endangered species", "points": 15, "result": "win" },
+                        { "text": "Focus on industrial development at the expense of wildlife", "points": -10, "result": "lose" },
+                        { "text": "Support local community-led conservation efforts", "points": 10, "result": "win" },
+                        { "text": "Neglect habitat restoration initiatives", "points": -5, "result": "neutral" }
+                    ]
+                },
+                {
+                    "title": "Scenario 6: Addressing Plastic Waste",
+                    "description": "You want to tackle plastic pollution in Nigeria. How do you start?",
+                    "choices": [
+                        { "text": "Ban single-use plastics", "points": 15, "result": "win" },
+                        { "text": "Encourage recycling initiatives", "points": 10, "result": "win" },
+                        { "text": "Promote public awareness on plastic waste", "points": 5, "result": "neutral" },
+                        { "text": "Rely on voluntary industry regulations", "points": -10, "result": "lose" }
+                    ]
+                },
+                {
+                    "title": "Scenario 7: Sustainable Urban Development",
+                    "description": "You aim to promote sustainable urban development. What is your focus?",
+                    "choices": [
+                        { "text": "Invest in public transportation systems", "points": 15, "result": "win" },
+                        { "text": "Encourage urban sprawl for economic growth", "points": -10, "result": "lose" },
+                        { "text": "Promote green building initiatives", "points": 10, "result": "win" },
+                        { "text": "Neglect urban planning regulations", "points": -5, "result": "neutral" }
+                    ]
+                },
+                {
+                    "title": "Scenario 8: Climate Change Awareness",
+                    "description": "You want to raise awareness about climate change in Nigeria. How do you proceed?",
+                    "choices": [
+                        { "text": "Launch a national climate awareness campaign", "points": 15, "result": "win" },
+                        { "text": "Limit climate education in schools", "points": -10, "result": "lose" },
+                        { "text": "Partner with NGOs for outreach programs", "points": 10, "result": "win" },
+                        { "text": "Focus on economic growth instead", "points": -5, "result": "neutral" }
+                    ]
+                },
+                {
+                    "title": "Scenario 9: Promoting Sustainable Tourism",
+                    "description": "You aim to promote sustainable tourism. What is your approach?",
+                    "choices": [
+                        { "text": "Develop eco-friendly tourism initiatives", "points": 15, "result": "win" },
+                        { "text": "Neglect environmental impacts of tourism", "points": -10, "result": "lose" },
+                        { "text": "Support local communities through tourism", "points": 10, "result": "win" },
+                        { "text": "Focus on mass tourism for economic benefits", "points": -5, "result": "neutral" }
+                    ]
+                },
+                {
+                    "title": "Scenario 10: Renewable Agriculture Practices",
+                    "description": "You want to implement sustainable agricultural practices. What is your first step?",
+                    "choices": [
+                        { "text": "Promote organic farming methods", "points": 15, "result": "win" },
+                        { "text": "Continue conventional farming practices", "points": -10, "result": "lose" },
+                        { "text": "Support agroforestry initiatives", "points": 10, "result": "win" },
+                        { "text": "Neglect the impact of chemical fertilizers", "points": -5, "result": "neutral" }
+                    ]
+                }
+            ],
+
+
+
+            "India": [
+                {
+                    title: "Scenario 1: Expanding Solar Energy Capacity",
+                    description: "You decided to increase India's solar energy capacity. How do you proceed?",
+                    choices: [
+                        { text: "Subsidize rooftop solar panels for households", points: 15, result: "win" },
+                        { text: "Invest more in coal to meet immediate energy needs", points: -10, result: "lose" },
+                        { text: "Focus on research for solar storage technologies", points: 5, result: "neutral" },
+                        { text: "Encourage energy conservation through awareness", points: 10, result: "win" }
+                    ]
+                },
+                {
+                    title: "Scenario 2: Water Conservation in Agriculture",
+                    description: "You implement water-saving techniques for agriculture. What is your approach?",
+                    choices: [
+                        { text: "Promote rainwater harvesting", points: 15, result: "win" },
+                        { text: "Rely on large-scale irrigation projects", points: 5, result: "neutral" },
+                        { text: "Limit water usage without providing alternatives", points: -10, result: "lose" },
+                        { text: "Promote drip and sprinkler irrigation systems", points: 10, result: "win" }
+                    ]
+                },
+                {
+                    title: "Scenario 3: Reducing Air Pollution in Cities",
+                    description: "You take steps to address air pollution in Indian cities. What is your focus?",
+                    choices: [
+                        { text: "Implement a ban on old diesel vehicles", points: 15, result: "win" },
+                        { text: "Introduce electric buses in major cities", points: 10, result: "win" },
+                        { text: "Promote awareness campaigns on pollution", points: 5, result: "neutral" },
+                        { text: "Delay action due to economic concerns", points: -10, result: "lose" }
+                    ]
+                },
+                {
+                    title: "Scenario 4: Afforestation Projects",
+                    description: "You launch afforestation efforts in deforested areas. What is your strategy?",
+                    choices: [
+                        { text: "Plant fast-growing commercial trees", points: 10, result: "neutral" },
+                        { text: "Focus on reforesting with native species", points: 15, result: "win" },
+                        { text: "Rely on local communities to plant trees", points: 5, result: "neutral" },
+                        { text: "Cut the budget for afforestation to fund other projects", points: -10, result: "lose" }
+                    ]
+                },
+                {
+                    title: "Scenario 5: Electric Vehicle Promotion",
+                    description: "You push for wider adoption of electric vehicles (EVs). What is your approach?",
+                    choices: [
+                        { text: "Offer subsidies for EV purchases", points: 15, result: "win" },
+                        { text: "Install charging stations across cities", points: 10, result: "win" },
+                        { text: "Promote hybrid vehicles instead", points: 5, result: "neutral" },
+                        { text: "Encourage the continued use of petrol cars", points: -10, result: "lose" }
+                    ]
+                },
+                {
+                    title: "Scenario 6: Sustainable Building Practices",
+                    description: "You encourage the use of sustainable materials in construction. What is your strategy?",
+                    choices: [
+                        { text: "Promote the use of recycled building materials", points: 15, result: "win" },
+                        { text: "Use locally sourced materials to support local economies", points: 10, result: "win" },
+                        { text: "Focus on low-cost traditional materials", points: -10, result: "lose" },
+                        { text: "Offer incentives for green building certifications", points: 5, result: "neutral" }
+                    ]
+                },
+                {
+                    title: "Scenario 7: Promoting Sustainable Tourism",
+                    description: "You aim to develop sustainable tourism practices. What is your approach?",
+                    choices: [
+                        { text: "Invest in eco-friendly tourist accommodations", points: 15, result: "win" },
+                        { text: "Limit tourist access to sensitive ecological areas", points: 10, result: "win" },
+                        { text: "Focus on mass tourism without restrictions", points: -10, result: "lose" },
+                        { text: "Educate tourists about responsible tourism", points: 5, result: "neutral" }
+                    ]
+                },
+                {
+                    title: "Scenario 8: Urban Green Spaces Development",
+                    description: "You plan to increase green spaces in urban areas. How do you proceed?",
+                    choices: [
+                        { text: "Create new parks and gardens in cities", points: 15, result: "win" },
+                        { text: "Turn vacant lots into community green spaces", points: 10, result: "win" },
+                        { text: "Prioritize commercial development over green spaces", points: -10, result: "lose" },
+                        { text: "Collaborate with NGOs for funding green projects", points: 5, result: "neutral" }
+                    ]
+                },
+                {
+                    title: "Scenario 9: Plastic Waste Management",
+                    description: "You aim to reduce plastic waste. What is your plan?",
+                    choices: [
+                        { text: "Ban single-use plastics across the country", points: 15, result: "win" },
+                        { text: "Encourage recycling initiatives with rewards", points: 10, result: "win" },
+                        { text: "Promote alternatives to plastic without enforcement", points: 5, result: "neutral" },
+                        { text: "Focus on incineration of plastic waste", points: -10, result: "lose" }
+                    ]
+                },
+                {
+                    title: "Scenario 10: Coastal Area Protection",
+                    description: "You focus on protecting coastal areas from climate change. What is your strategy?",
+                    choices: [
+                        { text: "Build seawalls and other protective infrastructure", points: 15, result: "win" },
+                        { text: "Restore mangroves to strengthen coastal resilience", points: 10, result: "win" },
+                        { text: "Promote coastal development for economic reasons", points: -10, result: "lose" },
+                        { text: "Invest in early warning systems for coastal hazards", points: 5, result: "neutral" }
+                    ]
+                },
+            ],
+
+            "Brazil": [
+                {
+                    title: "Scenario 1: Investing in Renewable Energy",
+                    description: "You decided to invest in renewable energy sources like solar and wind energy to reduce dependency on hydroelectric power due to weather fluctuations.",
+                    choices: [
+                        { text: "Expand solar and wind energy projects", points: 15, result: "win" },
+                        { text: "Continue building more hydroelectric dams", points: -10, result: "lose" },
+                        { text: "Invest in bioenergy research", points: 5, result: "neutral" },
+                        { text: "Encourage citizens to reduce electricity consumption during droughts", points: 10, result: "win" }
+                    ]
+                },
+                {
+                    title: "Scenario 2: Amazon Rainforest Protection",
+                    description: "The Amazon Rainforest faces increasing threats from deforestation and desertification. How do you approach its protection?",
+                    choices: [
+                        { text: "Enforce strict anti-deforestation laws", points: 15, result: "win" },
+                        { text: "Promote alternative reforestation programs", points: 10, result: "win" },
+                        { text: "Allow limited deforestation for economic growth", points: -10, result: "lose" },
+                        { text: "Encourage eco-tourism to generate revenue for protection", points: 5, result: "neutral" }
+                    ]
+                },
+                {
+                    title: "Scenario 3: Managing Extreme Weather Events",
+                    description: "Brazil is increasingly experiencing extreme weather events like floods and droughts. How do you handle this situation?",
+                    choices: [
+                        { text: "Invest in flood defenses and early warning systems", points: 15, result: "win" },
+                        { text: "Encourage climate resilience programs in vulnerable areas", points: 10, result: "win" },
+                        { text: "Rely on international aid during disasters", points: 5, result: "neutral" },
+                        { text: "Ignore the issue and focus on economic development", points: -10, result: "lose" }
+                    ]
+                },
+                {
+                    title: "Scenario 4: Promoting Sustainable Agriculture",
+                    description: "You need to promote sustainable agriculture practices in response to the effects of climate change on crop yields.",
+                    choices: [
+                        { text: "Encourage no-till farming and crop rotation", points: 15, result: "win" },
+                        { text: "Promote the use of drought-resistant crops", points: 10, result: "win" },
+                        { text: "Increase subsidies for industrial agriculture", points: -10, result: "lose" },
+                        { text: "Focus on short-term gains through chemical fertilizers", points: 5, result: "neutral" }
+                    ]
+                },
+                {
+                    title: "Scenario 5: Coastal Erosion and Sea Level Rise",
+                    description: "Brazil's coastal regions are at risk due to rising sea levels and coastal erosion. What measures do you take?",
+                    choices: [
+                        { text: "Build sea walls and restore coastal ecosystems", points: 15, result: "win" },
+                        { text: "Relocate communities from vulnerable areas", points: 10, result: "win" },
+                        { text: "Encourage coastal development for economic growth", points: -10, result: "lose" },
+                        { text: "Monitor sea levels and implement early warning systems", points: 5, result: "neutral" }
+                    ]
+                },
+                {
+                    title: "Scenario 6: Water Conservation",
+                    description: "Brazil faces recurring droughts, especially in the Northeast. How do you address water shortages?",
+                    choices: [
+                        { text: "Introduce water-saving technologies in agriculture", points: 15, result: "win" },
+                        { text: "Promote rainwater harvesting and storage", points: 10, result: "win" },
+                        { text: "Rely on desalination plants for water supply", points: 5, result: "neutral" },
+                        { text: "Allow unrestricted water use for agricultural growth", points: -10, result: "lose" }
+                    ]
+                },
+                {
+                    title: "Scenario 7: Urban Heat Island Effect",
+                    description: "With rising temperatures in urban areas, heat waves are becoming more common. What is your solution?",
+                    choices: [
+                        { text: "Expand green spaces and plant trees in cities", points: 15, result: "win" },
+                        { text: "Promote energy-efficient building materials to reduce heat", points: 10, result: "win" },
+                        { text: "Focus on air conditioning infrastructure", points: 5, result: "neutral" },
+                        { text: "Prioritize commercial development over green spaces", points: -10, result: "lose" }
+                    ]
+                },
+                {
+                    title: "Scenario 8: Sustainable Fishery Practices",
+                    description: "Brazil's marine biodiversity is under threat due to overfishing. How do you address this issue?",
+                    choices: [
+                        { text: "Implement fishing quotas to protect fish populations", points: 15, result: "win" },
+                        { text: "Encourage sustainable aquaculture (fish farming)", points: 10, result: "win" },
+                        { text: "Allow overfishing for economic gain", points: -10, result: "lose" },
+                        { text: "Establish marine protected areas", points: 5, result: "neutral" }
+                    ]
+                },
+                {
+                    title: "Scenario 9: Renewable Transportation",
+                    description: "You want to promote the use of electric vehicles in Brazil's rapidly growing cities. What do you focus on?",
+                    choices: [
+                        { text: "Provide subsidies for electric vehicle buyers", points: 15, result: "win" },
+                        { text: "Invest in charging infrastructure across cities", points: 10, result: "win" },
+                        { text: "Promote biofuels as an alternative", points: 5, result: "neutral" },
+                        { text: "Encourage gasoline vehicles for quicker implementation", points: -10, result: "lose" }
+                    ]
+                },
+                {
+                    title: "Scenario 10: Air Quality Improvement",
+                    description: "Brazil's cities are experiencing air pollution from traffic and industry. How do you tackle this?",
+                    choices: [
+                        { text: "Introduce stricter emissions standards for industries", points: 15, result: "win" },
+                        { text: "Subsidize cleaner technologies for factories", points: 10, result: "win" },
+                        { text: "Encourage public transport to reduce car use", points: 5, result: "neutral" },
+                        { text: "Loosen restrictions to boost economic growth", points: -10, result: "lose" }
+                    ]
+                }
+            ],
+
+            "China": [
+                {
+                    title: "Scenario 1: Air Pollution Control",
+                    description: "You need to tackle severe air pollution in major cities. What is your approach?",
+                    choices: [
+                        { text: "Implement stricter emissions standards", points: 15, result: "win" },
+                        { text: "Promote electric vehicles", points: 10, result: "win" },
+                        { text: "Encourage public transportation use", points: 5, result: "neutral" },
+                        { text: "Reduce industrial activity", points: -10, result: "lose" }
+                    ]
+                },
+                {
+                    title: "Scenario 2: Water Shortages",
+                    description: "Addressing water shortages, especially in northern regions, is critical. What will you do?",
+                    choices: [
+                        { text: "Implement tiered water pricing", points: 15, result: "win" },
+                        { text: "Invest in water recycling systems", points: 10, result: "win" },
+                        { text: "Rely on rainfall for water supply", points: -10, result: "lose" },
+                        { text: "Promote conservation education", points: 5, result: "neutral" }
+                    ]
+                },
+                {
+                    title: "Scenario 3: Extreme Weather Events",
+                    description: "Increased frequency of extreme weather events is affecting agriculture. How will you respond?",
+                    choices: [
+                        { text: "Invest in climate-resilient crops", points: 15, result: "win" },
+                        { text: "Enhance weather forecasting technology", points: 10, result: "win" },
+                        { text: "Continue current agricultural practices", points: -10, result: "lose" },
+                        { text: "Encourage farmer education on climate change", points: 5, result: "neutral" }
+                    ]
+                },
+                {
+                    title: "Scenario 4: Urban Heat Islands",
+                    description: "Urban areas are experiencing increased heat. What measures will you take?",
+                    choices: [
+                        { text: "Create more green spaces", points: 15, result: "win" },
+                        { text: "Implement reflective building materials", points: 10, result: "win" },
+                        { text: "Focus on infrastructure expansion", points: -10, result: "lose" },
+                        { text: "Raise awareness about heat effects", points: 5, result: "neutral" }
+                    ]
+                },
+                {
+                    title: "Scenario 5: Renewable Energy Push",
+                    description: "Transitioning to renewable energy is critical. What's your plan?",
+                    choices: [
+                        { text: "Invest heavily in solar and wind energy", points: 15, result: "win" },
+                        { text: "Subsidize renewable energy technologies", points: 10, result: "win" },
+                        { text: "Continue reliance on coal", points: -10, result: "lose" },
+                        { text: "Encourage public-private partnerships", points: 5, result: "neutral" }
+                    ]
+                },
+                {
+                    title: "Scenario 6: Coastal Erosion",
+                    description: "Rising sea levels are causing coastal erosion. What will you do?",
+                    choices: [
+                        { text: "Implement coastal protection projects", points: 15, result: "win" },
+                        { text: "Relocate vulnerable communities", points: 10, result: "win" },
+                        { text: "Ignore the issue for economic growth", points: -10, result: "lose" },
+                        { text: "Increase public awareness about coastal risks", points: 5, result: "neutral" }
+                    ]
+                },
+                {
+                    title: "Scenario 7: Air Quality Monitoring",
+                    description: "Improving air quality is a priority. How do you monitor pollution?",
+                    choices: [
+                        { text: "Install air quality monitoring stations", points: 15, result: "win" },
+                        { text: "Encourage citizen reporting of pollution", points: 10, result: "win" },
+                        { text: "Rely on outdated data", points: -10, result: "lose" },
+                        { text: "Promote public health campaigns", points: 5, result: "neutral" }
+                    ]
+                },
+                {
+                    title: "Scenario 8: Flooding in Urban Areas",
+                    description: "Urban flooding is becoming more common. What will you implement?",
+                    choices: [
+                        { text: "Improve drainage systems", points: 15, result: "win" },
+                        { text: "Implement green roofs and walls", points: 10, result: "win" },
+                        { text: "Allow uncontrolled urban development", points: -10, result: "lose" },
+                        { text: "Educate residents on flood preparedness", points: 5, result: "neutral" }
+                    ]
+                },
+                {
+                    title: "Scenario 9: Industrial Emissions",
+                    description: "You must address emissions from factories. What actions do you take?",
+                    choices: [
+                        { text: "Set stricter emission standards", points: 15, result: "win" },
+                        { text: "Incentivize clean technologies", points: 10, result: "win" },
+                        { text: "Delay regulation for industry growth", points: -10, result: "lose" },
+                        { text: "Engage community feedback on emissions", points: 5, result: "neutral" }
+                    ]
+                },
+                {
+                    title: "Scenario 10: Biodiversity Loss",
+                    description: "Biodiversity is declining rapidly. How will you address this?",
+                    choices: [
+                        { text: "Create protected areas for wildlife", points: 15, result: "win" },
+                        { text: "Promote biodiversity education in schools", points: 10, result: "win" },
+                        { text: "Neglect wildlife conservation for development", points: -10, result: "lose" },
+                        { text: "Engage local communities in conservation", points: 5, result: "neutral" }
+                    ]
+                }
+            ],
+            "Australia": [
+                {
+                    title: "Scenario 1: Coral Bleaching",
+                    description: "Coral reefs are experiencing bleaching events. What measures do you take?",
+                    choices: [
+                        { text: "Enforce fishing restrictions near reefs", points: 15, result: "win" },
+                        { text: "Invest in reef restoration projects", points: 10, result: "win" },
+                        { text: "Increase public awareness about coral health", points: 5, result: "neutral" },
+                        { text: "Ignore the issue for tourism growth", points: -10, result: "lose" }
+                    ]
+                },
+                {
+                    title: "Scenario 2: Drought Management",
+                    description: "With severe drought affecting agriculture, what is your strategy?",
+                    choices: [
+                        { text: "Implement water rationing", points: 15, result: "win" },
+                        { text: "Invest in drought-resistant crops", points: 10, result: "win" },
+                        { text: "Encourage traditional farming methods", points: -10, result: "lose" },
+                        { text: "Promote community water storage", points: 5, result: "neutral" }
+                    ]
+                },
+                {
+                    title: "Scenario 3: Bushfire Preparedness",
+                    description: "Bushfires are increasing in frequency. How do you prepare?",
+                    choices: [
+                        { text: "Implement controlled burns", points: 15, result: "win" },
+                        { text: "Invest in firefighting resources", points: 10, result: "win" },
+                        { text: "Rely on volunteers for firefighting", points: -10, result: "lose" },
+                        { text: "Promote public fire safety education", points: 5, result: "neutral" }
+                    ]
+                },
+                {
+                    title: "Scenario 4: Water Security",
+                    description: "Addressing water security is vital. What is your approach?",
+                    choices: [
+                        { text: "Implement rainwater harvesting", points: 15, result: "win" },
+                        { text: "Invest in desalination plants", points: 10, result: "win" },
+                        { text: "Ignore water scarcity issues", points: -10, result: "lose" },
+                        { text: "Encourage water conservation practices", points: 5, result: "neutral" }
+                    ]
+                },
+                {
+                    title: "Scenario 5: Coastal Erosion",
+                    description: "Rising sea levels are causing coastal erosion. What will you do?",
+                    choices: [
+                        { text: "Implement coastal protection projects", points: 15, result: "win" },
+                        { text: "Relocate vulnerable communities", points: 10, result: "win" },
+                        { text: "Ignore the issue for economic growth", points: -10, result: "lose" },
+                        { text: "Increase public awareness about coastal risks", points: 5, result: "neutral" }
+                    ]
+                },
+                {
+                    title: "Scenario 6: Renewable Energy Transition",
+                    description: "Transitioning to renewable energy sources is crucial. How do you proceed?",
+                    choices: [
+                        { text: "Invest heavily in solar and wind", points: 15, result: "win" },
+                        { text: "Implement carbon pricing", points: 10, result: "win" },
+                        { text: "Maintain coal as a backup", points: -10, result: "lose" },
+                        { text: "Promote energy efficiency", points: 5, result: "neutral" }
+                    ]
+                },
+                {
+                    title: "Scenario 7: Waste Management",
+                    description: "Improving waste management is a pressing issue. What's your approach?",
+                    choices: [
+                        { text: "Implement a national recycling program", points: 15, result: "win" },
+                        { text: "Ban single-use plastics", points: 10, result: "win" },
+                        { text: "Focus on incineration for waste", points: -10, result: "lose" },
+                        { text: "Promote composting initiatives", points: 5, result: "neutral" }
+                    ]
+                },
+                {
+                    title: "Scenario 8: Biodiversity Conservation",
+                    description: "Protecting biodiversity is essential. What actions will you take?",
+                    choices: [
+                        { text: "Create protected areas for wildlife", points: 15, result: "win" },
+                        { text: "Invest in conservation programs", points: 10, result: "win" },
+                        { text: "Neglect wildlife for development", points: -10, result: "lose" },
+                        { text: "Engage local communities in conservation efforts", points: 5, result: "neutral" }
+                    ]
+                },
+                {
+                    title: "Scenario 9: Air Quality Improvement",
+                    description: "Air quality is deteriorating. What measures will you implement?",
+                    choices: [
+                        { text: "Set stricter air quality standards", points: 15, result: "win" },
+                        { text: "Promote public transport use", points: 10, result: "win" },
+                        { text: "Continue business as usual", points: -10, result: "lose" },
+                        { text: "Increase public awareness about air pollution", points: 5, result: "neutral" }
+                    ]
+                },
+                {
+                    title: "Scenario 10: Urban Development",
+                    description: "Urban development is affecting green spaces. How do you balance this?",
+                    choices: [
+                        { text: "Implement green building standards", points: 15, result: "win" },
+                        { text: "Create more parks and green areas", points: 10, result: "win" },
+                        { text: "Prioritize urban sprawl", points: -10, result: "lose" },
+                        { text: "Encourage community involvement in planning", points: 5, result: "neutral" }
+                    ]
+                }
+            ],
+            "Germany": [
+                {
+                    title: "Scenario 1: Energy Transition",
+                    description: "Transitioning to renewable energy sources is crucial. How do you proceed?",
+                    choices: [
+                        { text: "Invest heavily in wind and solar", points: 15, result: "win" },
+                        { text: "Implement carbon pricing", points: 10, result: "win" },
+                        { text: "Maintain coal as a backup", points: -10, result: "lose" },
+                        { text: "Promote energy efficiency", points: 5, result: "neutral" }
+                    ]
+                },
+                {
+                    title: "Scenario 2: Waste Management",
+                    description: "Improving waste management is a pressing issue. What's your approach?",
+                    choices: [
+                        { text: "Implement a national recycling program", points: 15, result: "win" },
+                        { text: "Ban single-use plastics", points: 10, result: "win" },
+                        { text: "Focus on incineration for waste", points: -10, result: "lose" },
+                        { text: "Promote composting initiatives", points: 5, result: "neutral" }
+                    ]
+                },
+                {
+                    title: "Scenario 3: Urban Planning",
+                    description: "Sustainable urban planning is essential. What actions will you take?",
+                    choices: [
+                        { text: "Promote mixed-use developments", points: 15, result: "win" },
+                        { text: "Invest in public transportation", points: 10, result: "win" },
+                        { text: "Allow uncontrolled urban sprawl", points: -10, result: "lose" },
+                        { text: "Encourage community input in planning", points: 5, result: "neutral" }
+                    ]
+                },
+                {
+                    title: "Scenario 4: Air Quality Improvement",
+                    description: "Air pollution is affecting public health. How do you respond?",
+                    choices: [
+                        { text: "Set stricter emissions standards", points: 15, result: "win" },
+                        { text: "Promote electric vehicles", points: 10, result: "win" },
+                        { text: "Rely on diesel vehicles", points: -10, result: "lose" },
+                        { text: "Increase public awareness about air quality", points: 5, result: "neutral" }
+                    ]
+                },
+                {
+                    title: "Scenario 5: Biodiversity Loss",
+                    description: "Protecting biodiversity is critical. What steps do you take?",
+                    choices: [
+                        { text: "Create wildlife reserves", points: 15, result: "win" },
+                        { text: "Invest in conservation programs", points: 10, result: "win" },
+                        { text: "Neglect wildlife for urban development", points: -10, result: "lose" },
+                        { text: "Engage the public in conservation efforts", points: 5, result: "neutral" }
+                    ]
+                },
+                {
+                    title: "Scenario 6: Climate Change Mitigation",
+                    description: "What measures will you implement to mitigate climate change?",
+                    choices: [
+                        { text: "Promote renewable energy investments", points: 15, result: "win" },
+                        { text: "Set emissions reduction targets", points: 10, result: "win" },
+                        { text: "Continue fossil fuel reliance", points: -10, result: "lose" },
+                        { text: "Engage in international climate agreements", points: 5, result: "neutral" }
+                    ]
+                },
+                {
+                    title: "Scenario 7: Water Management",
+                    description: "Effective water management is essential. What actions will you take?",
+                    choices: [
+                        { text: "Invest in water recycling technologies", points: 15, result: "win" },
+                        { text: "Implement water conservation programs", points: 10, result: "win" },
+                        { text: "Neglect water conservation", points: -10, result: "lose" },
+                        { text: "Promote public awareness about water use", points: 5, result: "neutral" }
+                    ]
+                },
+                {
+                    title: "Scenario 8: Renewable Energy Adoption",
+                    description: "Encouraging renewable energy adoption is vital. What's your strategy?",
+                    choices: [
+                        { text: "Subsidize renewable energy projects", points: 15, result: "win" },
+                        { text: "Implement tax incentives for green technologies", points: 10, result: "win" },
+                        { text: "Focus on traditional energy sources", points: -10, result: "lose" },
+                        { text: "Raise public awareness on renewable energy", points: 5, result: "neutral" }
+                    ]
+                },
+                {
+                    title: "Scenario 9: Urban Green Spaces",
+                    description: "Creating urban green spaces is important. How do you encourage this?",
+                    choices: [
+                        { text: "Develop parks and community gardens", points: 15, result: "win" },
+                        { text: "Promote green roofs", points: 10, result: "win" },
+                        { text: "Prioritize concrete developments", points: -10, result: "lose" },
+                        { text: "Engage community in green projects", points: 5, result: "neutral" }
+                    ]
+                },
+                {
+                    title: "Scenario 10: Energy Efficiency",
+                    description: "Improving energy efficiency is critical. What will you implement?",
+                    choices: [
+                        { text: "Set energy efficiency standards", points: 15, result: "win" },
+                        { text: "Promote energy-efficient appliances", points: 10, result: "win" },
+                        { text: "Ignore energy waste issues", points: -10, result: "lose" },
+                        { text: "Raise awareness about energy conservation", points: 5, result: "neutral" }
+                    ]
+                }
+            ],
+            "Japan": [
+                {
+                    title: "Scenario 1: Disaster Preparedness",
+                    description: "Natural disasters are frequent. What measures do you take to prepare?",
+                    choices: [
+                        { text: "Implement nationwide drills and education", points: 15, result: "win" },
+                        { text: "Invest in early warning systems", points: 10, result: "win" },
+                        { text: "Rely on community support", points: 5, result: "neutral" },
+                        { text: "Cut funding for disaster preparedness", points: -10, result: "lose" }
+                    ]
+                },
+                {
+                    title: "Scenario 2: Pollution Control",
+                    description: "Pollution is impacting public health. How will you address this?",
+                    choices: [
+                        { text: "Set strict pollution limits", points: 15, result: "win" },
+                        { text: "Invest in clean technology", points: 10, result: "win" },
+                        { text: "Neglect pollution concerns for industry growth", points: -10, result: "lose" },
+                        { text: "Increase public awareness about pollution", points: 5, result: "neutral" }
+                    ]
+                },
+                {
+                    title: "Scenario 3: Aging Population",
+                    description: "The aging population poses challenges. What is your approach?",
+                    choices: [
+                        { text: "Invest in elder care programs", points: 15, result: "win" },
+                        { text: "Promote workforce participation for seniors", points: 10, result: "win" },
+                        { text: "Neglect the issue for economic growth", points: -10, result: "lose" },
+                        { text: "Encourage community support for elderly", points: 5, result: "neutral" }
+                    ]
+                },
+                {
+                    title: "Scenario 4: Renewable Energy Development",
+                    description: "Transitioning to renewable energy is critical. What is your plan?",
+                    choices: [
+                        { text: "Invest in solar and wind energy", points: 15, result: "win" },
+                        { text: "Promote energy efficiency", points: 10, result: "win" },
+                        { text: "Continue reliance on nuclear energy", points: -10, result: "lose" },
+                        { text: "Engage public in renewable initiatives", points: 5, result: "neutral" }
+                    ]
+                },
+                {
+                    title: "Scenario 5: Economic Growth vs. Environment",
+                    description: "Balancing economic growth with environmental protection is essential. How do you manage this?",
+                    choices: [
+                        { text: "Promote sustainable development practices", points: 15, result: "win" },
+                        { text: "Invest in green technologies", points: 10, result: "win" },
+                        { text: "Neglect environmental concerns for growth", points: -10, result: "lose" },
+                        { text: "Encourage corporate responsibility", points: 5, result: "neutral" }
+                    ]
+                },
+                {
+                    title: "Scenario 6: Urbanization Challenges",
+                    description: "Rapid urbanization presents challenges. What measures will you implement?",
+                    choices: [
+                        { text: "Invest in public transportation", points: 15, result: "win" },
+                        { text: "Promote mixed-use developments", points: 10, result: "win" },
+                        { text: "Ignore urban planning issues", points: -10, result: "lose" },
+                        { text: "Encourage community input in urban planning", points: 5, result: "neutral" }
+                    ]
+                },
+                {
+                    title: "Scenario 7: Biodiversity Loss",
+                    description: "Biodiversity is declining rapidly. What actions will you take?",
+                    choices: [
+                        { text: "Create protected areas for wildlife", points: 15, result: "win" },
+                        { text: "Invest in conservation programs", points: 10, result: "win" },
+                        { text: "Neglect wildlife conservation for development", points: -10, result: "lose" },
+                        { text: "Engage local communities in conservation", points: 5, result: "neutral" }
+                    ]
+                },
+                {
+                    title: "Scenario 8: Climate Change Adaptation",
+                    description: "Adapting to climate change is essential. What strategies do you adopt?",
+                    choices: [
+                        { text: "Invest in climate-resilient infrastructure", points: 15, result: "win" },
+                        { text: "Promote disaster-resistant building practices", points: 10, result: "win" },
+                        { text: "Ignore climate adaptation needs", points: -10, result: "lose" },
+                        { text: "Engage public in climate adaptation efforts", points: 5, result: "neutral" }
+                    ]
+                },
+                {
+                    title: "Scenario 9: Water Resource Management",
+                    description: "Managing water resources effectively is critical. What will you do?",
+                    choices: [
+                        { text: "Implement rainwater harvesting", points: 15, result: "win" },
+                        { text: "Invest in water recycling technologies", points: 10, result: "win" },
+                        { text: "Neglect water resource management", points: -10, result: "lose" },
+                        { text: "Raise public awareness about water conservation", points: 5, result: "neutral" }
+                    ]
+                },
+                {
+                    title: "Scenario 10: Air Quality Improvement",
+                    description: "Air quality is deteriorating. What measures will you implement?",
+                    choices: [
+                        { text: "Set stricter air quality standards", points: 15, result: "win" },
+                        { text: "Promote public transport use", points: 10, result: "win" },
+                        { text: "Continue reliance on fossil fuels", points: -10, result: "lose" },
+                        { text: "Increase public awareness about air pollution", points: 5, result: "neutral" }
+                    ]
+                }
+            ],
+            "Canada": [
+                {
+                    title: "Scenario 1: Wildfire Prevention",
+                    description: "You implement measures to prevent wildfires. How do you proceed?",
+                    choices: [
+                        { text: "Invest in controlled burns and forest management", points: 15, result: "win" },
+                        { text: "Rely on emergency firefighting teams", points: -10, result: "lose" },
+                        { text: "Increase public awareness on fire safety", points: 10, result: "win" },
+                        { text: "Focus on replanting efforts post-fire", points: 5, result: "neutral" }
+                    ]
+                },
+                {
+                    title: "Scenario 2: Glacial Preservation",
+                    description: "Melting glaciers are a major concern. What is your strategy?",
+                    choices: [
+                        { text: "Implement strong emissions reduction targets", points: 15, result: "win" },
+                        { text: "Focus on geoengineering research to prevent melting", points: 5, result: "neutral" },
+                        { text: "Promote renewable energy to reduce carbon footprint", points: 10, result: "win" },
+                        { text: "Allow unrestricted industrial activities", points: -10, result: "lose" }
+                    ]
+                },
+                {
+                    title: "Scenario 3: Water Pollution Control",
+                    description: "You focus on improving water quality in Canada's rivers and lakes. What is your plan?",
+                    choices: [
+                        { text: "Introduce stricter regulations on industrial pollutants", points: 15, result: "win" },
+                        { text: "Promote wastewater treatment upgrades", points: 10, result: "win" },
+                        { text: "Rely on fines for polluters", points: 5, result: "neutral" },
+                        { text: "Reduce monitoring to save costs", points: -10, result: "lose" }
+                    ]
+                },
+                {
+                    title: "Scenario 4: Forest Restoration",
+                    description: "After a major wildfire, you decide to restore the forest. What do you prioritize?",
+                    choices: [
+                        { text: "Replant with native species", points: 15, result: "win" },
+                        { text: "Focus on fast-growing non-native species", points: 5, result: "neutral" },
+                        { text: "Allow natural regeneration without intervention", points: 10, result: "win" },
+                        { text: "Delay restoration efforts", points: -10, result: "lose" }
+                    ]
+                },
+                {
+                    title: "Scenario 5: Protecting Arctic Wildlife",
+                    description: "Melting ice threatens Arctic species. How do you help them?",
+                    choices: [
+                        { text: "Create wildlife reserves in the Arctic", points: 15, result: "win" },
+                        { text: "Focus on reducing human activity in the area", points: 10, result: "win" },
+                        { text: "Promote research into Arctic wildlife", points: 5, result: "neutral" },
+                        { text: "Allow more commercial activities to boost the economy", points: -10, result: "lose" }
+                    ]
+                },
+                {
+                    title: "Scenario 6: Sustainable Fisheries",
+                    description: "Canada's waters are a vital resource. How do you manage fisheries?",
+                    choices: [
+                        { text: "Implement strict fishing quotas", points: 15, result: "win" },
+                        { text: "Promote sustainable aquaculture", points: 10, result: "win" },
+                        { text: "Allow some overfishing for short-term economic gain", points: -10, result: "lose" },
+                        { text: "Increase marine reserves to protect fish stocks", points: 5, result: "neutral" }
+                    ]
+                },
+                {
+                    title: "Scenario 7: Climate Education",
+                    description: "You want to raise public awareness about climate change. How do you proceed?",
+                    choices: [
+                        { text: "Introduce climate education in schools", points: 15, result: "win" },
+                        { text: "Host public workshops and campaigns", points: 10, result: "win" },
+                        { text: "Rely on online resources", points: 5, result: "neutral" },
+                        { text: "Delay educational efforts due to budget cuts", points: -10, result: "lose" }
+                    ]
+                },
+                {
+                    title: "Scenario 8: Protecting Waterways",
+                    description: "You focus on reducing pollution in major lakes and rivers. What steps do you take?",
+                    choices: [
+                        { text: "Introduce stricter pollution controls on industries", points: 15, result: "win" },
+                        { text: "Promote community-led cleanups", points: 10, result: "win" },
+                        { text: "Rely on fines to deter polluters", points: 5, result: "neutral" },
+                        { text: "Delay action to focus on economic recovery", points: -10, result: "lose" }
+                    ]
+                },
+                {
+                    title: "Scenario 9: Flood Management",
+                    description: "Climate change is increasing flood risks. How do you protect communities?",
+                    choices: [
+                        { text: "Build flood barriers and improve drainage", points: 15, result: "win" },
+                        { text: "Encourage relocating vulnerable populations", points: 10, result: "win" },
+                        { text: "Focus on emergency response plans", points: 5, result: "neutral" },
+                        { text: "Allow unrestricted urban development in flood-prone areas", points: -10, result: "lose" }
+                    ]
+                },
+                {
+                    title: "Scenario 10: Green Energy Transition",
+                    description: "You focus on transitioning to renewable energy. What is your approach?",
+                    choices: [
+                        { text: "Subsidize renewable energy projects", points: 15, result: "win" },
+                        { text: "Promote solar and wind power installations", points: 10, result: "win" },
+                        { text: "Rely on natural gas as a bridge fuel", points: 5, result: "neutral" },
+                        { text: "Focus on fossil fuel development for short-term gains", points: -10, result: "lose" }
+                    ]
+                }
+            ],
+            "Mexico": [
+                {
+                    title: "Scenario 1: Air Quality Improvement",
+                    description: "Air pollution is a significant issue in Mexico. What is your strategy?",
+                    choices: [
+                        { text: "Introduce stricter vehicle emissions standards", points: 15, result: "win" },
+                        { text: "Subsidize electric vehicle purchases", points: 10, result: "win" },
+                        { text: "Promote carpooling and public transportation", points: 5, result: "neutral" },
+                        { text: "Allow relaxed emission regulations to attract industry", points: -10, result: "lose" }
+                    ]
+                },
+                {
+                    title: "Scenario 2: Deforestation Prevention",
+                    description: "You need to protect Mexico's forests. How do you proceed?",
+                    choices: [
+                        { text: "Enforce strict penalties for illegal logging", points: 15, result: "win" },
+                        { text: "Promote sustainable logging practices", points: 10, result: "win" },
+                        { text: "Focus on reforestation after deforestation", points: 5, result: "neutral" },
+                        { text: "Allow selective logging for economic gain", points: -10, result: "lose" }
+                    ]
+                },
+                {
+                    title: "Scenario 3: Water Scarcity Solutions",
+                    description: "Mexico faces water shortages. What is your approach?",
+                    choices: [
+                        { text: "Invest in desalination plants", points: 15, result: "win" },
+                        { text: "Promote water-efficient irrigation for agriculture", points: 10, result: "win" },
+                        { text: "Rely on rainwater harvesting", points: 5, result: "neutral" },
+                        { text: "Allow excessive water extraction for industry", points: -10, result: "lose" }
+                    ]
+                },
+                {
+                    title: "Scenario 4: Urban Air Pollution",
+                    description: "Mexico's cities struggle with air pollution. What measures do you implement?",
+                    choices: [
+                        { text: "Create car-free zones in cities", points: 15, result: "win" },
+                        { text: "Subsidize electric buses", points: 10, result: "win" },
+                        { text: "Encourage hybrid vehicle use", points: 5, result: "neutral" },
+                        { text: "Focus on expanding road networks", points: -10, result: "lose" }
+                    ]
+                },
+                {
+                    title: "Scenario 5: Coastal Ecosystem Protection",
+                    description: "Mexico's coastal ecosystems are at risk. What is your focus?",
+                    choices: [
+                        { text: "Establish marine protected areas", points: 15, result: "win" },
+                        { text: "Limit coastal development", points: 10, result: "win" },
+                        { text: "Promote sustainable tourism", points: 5, result: "neutral" },
+                        { text: "Allow unrestricted commercial fishing", points: -10, result: "lose" }
+                    ]
+                },
+                {
+                    title: "Scenario 6: Energy Efficiency Programs",
+                    description: "You aim to reduce energy consumption in Mexico. What is your plan?",
+                    choices: [
+                        { text: "Promote energy-efficient appliances", points: 15, result: "win" },
+                        { text: "Introduce building energy codes", points: 10, result: "win" },
+                        { text: "Offer tax incentives for energy efficiency", points: 5, result: "neutral" },
+                        { text: "Delay implementation to focus on other issues", points: -10, result: "lose" }
+                    ]
+                },
+                {
+                    title: "Scenario 7: Desertification Control",
+                    description: "Mexico faces desertification. How do you combat it?",
+                    choices: [
+                        { text: "Promote sustainable land use practices", points: 15, result: "win" },
+                        { text: "Focus on replanting vegetation in affected areas", points: 10, result: "win" },
+                        { text: "Rely on community-driven conservation efforts", points: 5, result: "neutral" },
+                        { text: "Allow overgrazing to continue", points: -10, result: "lose" }
+                    ]
+                },
+                {
+                    title: "Scenario 8: Sustainable Agriculture",
+                    description: "How do you promote sustainable farming in Mexico?",
+                    choices: [
+                        { text: "Encourage organic farming practices", points: 15, result: "win" },
+                        { text: "Subsidize drought-resistant crops", points: 10, result: "win" },
+                        { text: "Promote agroforestry systems", points: 5, result: "neutral" },
+                        { text: "Focus on monoculture farming", points: -10, result: "lose" }
+                    ]
+                },
+                {
+                    title: "Scenario 9: Waste Management",
+                    description: "You need to improve Mexico's waste management system. What do you prioritize?",
+                    choices: [
+                        { text: "Promote recycling and waste reduction", points: 15, result: "win" },
+                        { text: "Invest in modern landfill technologies", points: 10, result: "win" },
+                        { text: "Focus on waste-to-energy projects", points: 5, result: "neutral" },
+                        { text: "Allow unrestricted waste dumping", points: -10, result: "lose" }
+                    ]
+                },
+                {
+                    title: "Scenario 10: Sustainable Tourism",
+                    description: "Mexico relies heavily on tourism. How do you ensure it is sustainable?",
+                    choices: [
+                        { text: "Promote eco-tourism initiatives", points: 15, result: "win" },
+                        { text: "Limit the development of resorts in fragile ecosystems", points: 10, result: "win" },
+                        { text: "Focus on marketing mass tourism", points: 5, result: "neutral" },
+                        { text: "Encourage tourism growth without restrictions", points: -10, result: "lose" }
+                    ]
+                }
+            ],
+            "NewZealand": [
+                {
+                    title: "Scenario 1: Coastal Erosion Prevention",
+                    description: "Rising sea levels are eroding New Zealand's coastlines. How do you respond?",
+                    choices: [
+                        { text: "Build sea walls to protect communities", points: 15, result: "win" },
+                        { text: "Relocate vulnerable communities inland", points: 10, result: "win" },
+                        { text: "Promote natural barriers like mangroves", points: 5, result: "neutral" },
+                        { text: "Ignore the issue and hope for the best", points: -10, result: "lose" }
+                    ]
+                },
+                {
+                    title: "Scenario 2: Biodiversity Protection",
+                    description: "New Zealand's unique biodiversity is under threat. What is your strategy?",
+                    choices: [
+                        { text: "Create protected reserves for endangered species", points: 15, result: "win" },
+                        { text: "Limit human access to vulnerable ecosystems", points: 10, result: "win" },
+                        { text: "Invest in captive breeding programs", points: 5, result: "neutral" },
+                        { text: "Allow development in biodiversity hotspots", points: -10, result: "lose" }
+                    ]
+                },
+                {
+                    title: "Scenario 3: Agricultural Pollution Reduction",
+                    description: "Agriculture contributes significantly to pollution in rivers and lakes. How do you tackle it?",
+                    choices: [
+                        { text: "Promote sustainable farming practices", points: 15, result: "win" },
+                        { text: "Introduce stricter water quality standards", points: 10, result: "win" },
+                        { text: "Encourage farmers to reduce chemical use", points: 5, result: "neutral" },
+                        { text: "Allow farmers to continue current practices", points: -10, result: "lose" }
+                    ]
+                },
+                {
+                    title: "Scenario 4: Marine Ecosystem Conservation",
+                    description: "New Zealand's marine life is at risk from overfishing and pollution. How do you protect it?",
+                    choices: [
+                        { text: "Establish marine protected areas", points: 15, result: "win" },
+                        { text: "Enforce fishing quotas and sustainable practices", points: 10, result: "win" },
+                        { text: "Promote eco-friendly tourism in marine areas", points: 5, result: "neutral" },
+                        { text: "Allow commercial fishing without restrictions", points: -10, result: "lose" }
+                    ]
+                },
+                {
+                    title: "Scenario 5: Renewable Energy Expansion",
+                    description: "New Zealand aims to transition to 100% renewable energy. What steps do you take?",
+                    choices: [
+                        { text: "Invest heavily in wind and solar power", points: 15, result: "win" },
+                        { text: "Promote small-scale renewable projects in communities", points: 10, result: "win" },
+                        { text: "Rely on natural gas as a transitional fuel", points: 5, result: "neutral" },
+                        { text: "Delay renewable projects to focus on economic growth", points: -10, result: "lose" }
+                    ]
+                },
+                {
+                    title: "Scenario 6: Invasive Species Control",
+                    description: "Invasive species are threatening native wildlife. What do you do?",
+                    choices: [
+                        { text: "Implement strong invasive species eradication programs", points: 15, result: "win" },
+                        { text: "Focus on public awareness campaigns about invasive species", points: 10, result: "win" },
+                        { text: "Allow invasive species to coexist with natives", points: 5, result: "neutral" },
+                        { text: "Ignore the issue", points: -10, result: "lose" }
+                    ]
+                },
+                {
+                    title: "Scenario 7: Climate Change Adaptation",
+                    description: "Climate change is affecting New Zealand's weather patterns. How do you prepare?",
+                    choices: [
+                        { text: "Develop comprehensive climate adaptation plans", points: 15, result: "win" },
+                        { text: "Promote resilient infrastructure in cities", points: 10, result: "win" },
+                        { text: "Encourage local communities to adapt on their own", points: 5, result: "neutral" },
+                        { text: "Do nothing and hope for the best", points: -10, result: "lose" }
+                    ]
+                },
+                {
+                    title: "Scenario 8: Reforestation",
+                    description: "You aim to restore New Zealand's forests. What is your approach?",
+                    choices: [
+                        { text: "Replant native species in deforested areas", points: 15, result: "win" },
+                        { text: "Allow forests to naturally regenerate", points: 10, result: "win" },
+                        { text: "Focus on fast-growing, non-native species for reforestation", points: 5, result: "neutral" },
+                        { text: "Permit deforestation for economic growth", points: -10, result: "lose" }
+                    ]
+                },
+                {
+                    title: "Scenario 9: Sustainable Tourism",
+                    description: "Tourism is booming in New Zealand, but it impacts the environment. What is your approach?",
+                    choices: [
+                        { text: "Promote eco-tourism and limit visitor numbers in sensitive areas", points: 15, result: "win" },
+                        { text: "Encourage sustainable practices in the tourism industry", points: 10, result: "win" },
+                        { text: "Expand tourism infrastructure without limits", points: -10, result: "lose" },
+                        { text: "Focus on mass tourism for economic gain", points: 5, result: "neutral" }
+                    ]
+                },
+                {
+                    title: "Scenario 10: Clean Water Initiative",
+                    description: "You want to ensure clean drinking water for all. How do you proceed?",
+                    choices: [
+                        { text: "Implement strict water quality regulations", points: 15, result: "win" },
+                        { text: "Encourage water-saving technologies in agriculture", points: 10, result: "win" },
+                        { text: "Promote community-led water conservation efforts", points: 5, result: "neutral" },
+                        { text: "Allow relaxed regulations for economic growth", points: -10, result: "lose" }
+                    ]
+                }
+            ],
+
+            "South Africa": [
+                {
+                    title: "Scenario 1: Drought Management",
+                    description: "South Africa faces recurring droughts. How do you manage water resources?",
+                    choices: [
+                        { text: "Invest in water-saving infrastructure", points: 15, result: "win" },
+                        { text: "Promote drought-resistant crops", points: 10, result: "win" },
+                        { text: "Rely on short-term water imports", points: 5, result: "neutral" },
+                        { text: "Ignore the issue", points: -10, result: "lose" }
+                    ]
+                },
+                {
+                    title: "Scenario 2: Wildlife Conservation",
+                    description: "Wildlife poaching threatens South Africa's biodiversity. How do you respond?",
+                    choices: [
+                        { text: "Increase anti-poaching patrols", points: 15, result: "win" },
+                        { text: "Expand protected areas", points: 10, result: "win" },
+                        { text: "Encourage wildlife tourism for funding", points: 5, result: "neutral" },
+                        { text: "Ignore the issue", points: -10, result: "lose" }
+                    ]
+                },
+                {
+                    title: "Scenario 3: Renewable Energy Investment",
+                    description: "How will you promote renewable energy in South Africa?",
+                    choices: [
+                        { text: "Invest in solar and wind projects", points: 15, result: "win" },
+                        { text: "Provide subsidies for green technology", points: 10, result: "win" },
+                        { text: "Continue reliance on coal", points: 5, result: "neutral" },
+                        { text: "Delay investments due to costs", points: -10, result: "lose" }
+                    ]
+                },
+                {
+                    title: "Scenario 4: Water Pollution",
+                    description: "You need to address the rising levels of water pollution in rivers. What do you do?",
+                    choices: [
+                        { text: "Enforce stricter regulations on industrial waste", points: 15, result: "win" },
+                        { text: "Launch community clean-up initiatives", points: 10, result: "win" },
+                        { text: "Raise awareness about pollution", points: 5, result: "neutral" },
+                        { text: "Ignore the issue", points: -10, result: "lose" }
+                    ]
+                },
+                {
+                    title: "Scenario 5: Air Quality Improvement",
+                    description: "Air quality is declining due to urban pollution. How will you respond?",
+                    choices: [
+                        { text: "Enhance public transportation options", points: 15, result: "win" },
+                        { text: "Regulate industrial emissions", points: 10, result: "win" },
+                        { text: "Encourage carpooling", points: 5, result: "neutral" },
+                        { text: "Do nothing", points: -10, result: "lose" }
+                    ]
+                },
+                {
+                    title: "Scenario 6: Agricultural Sustainability",
+                    description: "How do you ensure sustainable farming practices in South Africa?",
+                    choices: [
+                        { text: "Promote organic farming", points: 15, result: "win" },
+                        { text: "Provide education on sustainable practices", points: 10, result: "win" },
+                        { text: "Focus on maximizing yields", points: 5, result: "neutral" },
+                        { text: "Ignore environmental impacts", points: -10, result: "lose" }
+                    ]
+                },
+                {
+                    title: "Scenario 7: Coastal Erosion",
+                    description: "You need to address coastal erosion affecting communities. What do you do?",
+                    choices: [
+                        { text: "Invest in coastal defenses", points: 15, result: "win" },
+                        { text: "Promote restoration of natural habitats", points: 10, result: "win" },
+                        { text: "Conduct studies but delay action", points: 5, result: "neutral" },
+                        { text: "Ignore the problem", points: -10, result: "lose" }
+                    ]
+                },
+                {
+                    title: "Scenario 8: Urban Development",
+                    description: "How will you manage urban development to minimize environmental impact?",
+                    choices: [
+                        { text: "Implement green building codes", points: 15, result: "win" },
+                        { text: "Promote public green spaces", points: 10, result: "win" },
+                        { text: "Prioritize economic growth over sustainability", points: 5, result: "neutral" },
+                        { text: "Ignore sustainability in planning", points: -10, result: "lose" }
+                    ]
+                },
+                {
+                    title: "Scenario 9: Education and Awareness",
+                    description: "How will you educate the public on environmental issues?",
+                    choices: [
+                        { text: "Launch nationwide awareness campaigns", points: 15, result: "win" },
+                        { text: "Integrate environmental education in schools", points: 10, result: "win" },
+                        { text: "Host community workshops", points: 5, result: "neutral" },
+                        { text: "Neglect education on the issue", points: -10, result: "lose" }
+                    ]
+                },
+                {
+                    title: "Scenario 10: Climate Change Adaptation",
+                    description: "What strategies will you implement to adapt to climate change?",
+                    choices: [
+                        { text: "Develop comprehensive climate action plans", points: 15, result: "win" },
+                        { text: "Invest in research and development", points: 10, result: "win" },
+                        { text: "Focus on short-term solutions", points: 5, result: "neutral" },
+                        { text: "Ignore the potential impacts", points: -10, result: "lose" }
+                    ]
+                }
+            ],
+
+            "Indonesia": [
+                {
+                    title: "Scenario 1: Deforestation Control",
+                    description: "Indonesia’s forests are rapidly disappearing. How do you tackle deforestation?",
+                    choices: [
+                        { text: "Enforce stricter logging regulations", points: 15, result: "win" },
+                        { text: "Promote reforestation programs", points: 10, result: "win" },
+                        { text: "Focus on economic growth from timber", points: 5, result: "neutral" },
+                        { text: "Ignore the problem", points: -10, result: "lose" }
+                    ]
+                },
+                {
+                    title: "Scenario 2: Marine Conservation",
+                    description: "Indonesia’s marine ecosystems are threatened by overfishing. What do you do?",
+                    choices: [
+                        { text: "Establish marine protected areas", points: 15, result: "win" },
+                        { text: "Implement sustainable fishing practices", points: 10, result: "win" },
+                        { text: "Increase fishing quotas for economic gain", points: 5, result: "neutral" },
+                        { text: "Neglect the situation", points: -10, result: "lose" }
+                    ]
+                },
+                {
+                    title: "Scenario 3: Climate Change Awareness",
+                    description: "How do you raise awareness about climate change impacts?",
+                    choices: [
+                        { text: "Launch educational campaigns", points: 15, result: "win" },
+                        { text: "Engage communities in discussions", points: 10, result: "win" },
+                        { text: "Rely on media coverage", points: 5, result: "neutral" },
+                        { text: "Ignore awareness efforts", points: -10, result: "lose" }
+                    ]
+                },
+                {
+                    title: "Scenario 4: Land Use Management",
+                    description: "What measures will you take to manage land use sustainably?",
+                    choices: [
+                        { text: "Implement zoning laws for conservation", points: 15, result: "win" },
+                        { text: "Promote urban green spaces", points: 10, result: "win" },
+                        { text: "Prioritize industrial development", points: 5, result: "neutral" },
+                        { text: "Neglect land management", points: -10, result: "lose" }
+                    ]
+                },
+                {
+                    title: "Scenario 5: Disaster Preparedness",
+                    description: "How will you prepare for natural disasters like earthquakes?",
+                    choices: [
+                        { text: "Invest in earthquake-resistant infrastructure", points: 15, result: "win" },
+                        { text: "Conduct regular drills and education", points: 10, result: "win" },
+                        { text: "Rely on emergency services after disasters", points: 5, result: "neutral" },
+                        { text: "Ignore the risks", points: -10, result: "lose" }
+                    ]
+                },
+                {
+                    title: "Scenario 6: Pollution Control",
+                    description: "How do you address pollution in urban areas?",
+                    choices: [
+                        { text: "Implement stricter pollution controls", points: 15, result: "win" },
+                        { text: "Promote public transportation", points: 10, result: "win" },
+                        { text: "Increase vehicle regulations", points: 5, result: "neutral" },
+                        { text: "Ignore pollution issues", points: -10, result: "lose" }
+                    ]
+                },
+                {
+                    title: "Scenario 7: Urban Air Quality",
+                    description: "Air quality is deteriorating in major cities. What is your plan?",
+                    choices: [
+                        { text: "Enhance green spaces and parks", points: 15, result: "win" },
+                        { text: "Enforce emission standards for vehicles", points: 10, result: "win" },
+                        { text: "Increase public awareness about pollution", points: 5, result: "neutral" },
+                        { text: "Delay action due to economic concerns", points: -10, result: "lose" }
+                    ]
+                },
+                {
+                    title: "Scenario 8: Biodiversity Preservation",
+                    description: "How do you preserve Indonesia's unique biodiversity?",
+                    choices: [
+                        { text: "Support conservation initiatives", points: 15, result: "win" },
+                        { text: "Collaborate with NGOs", points: 10, result: "win" },
+                        { text: "Limit development in natural reserves", points: 5, result: "neutral" },
+                        { text: "Prioritize tourism over preservation", points: -10, result: "lose" }
+                    ]
+                },
+                {
+                    title: "Scenario 9: Community Involvement",
+                    description: "How do you involve local communities in environmental conservation?",
+                    choices: [
+                        { text: "Create community-led programs", points: 15, result: "win" },
+                        { text: "Conduct workshops and training", points: 10, result: "win" },
+                        { text: "Provide incentives for participation", points: 5, result: "neutral" },
+                        { text: "Neglect community input", points: -10, result: "lose" }
+                    ]
+                },
+                {
+                    title: "Scenario 10: Sustainable Tourism",
+                    description: "How do you promote sustainable tourism in Indonesia?",
+                    choices: [
+                        { text: "Implement eco-friendly tourism policies", points: 15, result: "win" },
+                        { text: "Educate tourists on sustainability", points: 10, result: "win" },
+                        { text: "Encourage mass tourism for economic gain", points: 5, result: "neutral" },
+                        { text: "Ignore the environmental impact", points: -10, result: "lose" }
+                    ]
+                }
+            ],
+
+            "Italy": [
+                {
+                    title: "Scenario 1: Cultural Heritage Protection",
+                    description: "How will you protect Italy's cultural heritage from climate change?",
+                    choices: [
+                        { text: "Implement restoration projects for historical sites", points: 15, result: "win" },
+                        { text: "Increase funding for cultural preservation", points: 10, result: "win" },
+                        { text: "Limit access to some sites", points: 5, result: "neutral" },
+                        { text: "Neglect preservation efforts", points: -10, result: "lose" }
+                    ]
+                },
+                {
+                    title: "Scenario 2: Tourism Management",
+                    description: "How do you manage the impacts of mass tourism on local communities?",
+                    choices: [
+                        { text: "Implement tourist limits in key areas", points: 15, result: "win" },
+                        { text: "Promote off-season travel", points: 10, result: "win" },
+                        { text: "Increase tourism fees", points: 5, result: "neutral" },
+                        { text: "Ignore community concerns", points: -10, result: "lose" }
+                    ]
+                },
+                {
+                    title: "Scenario 3: Renewable Energy Initiatives",
+                    description: "What steps will you take to promote renewable energy in Italy?",
+                    choices: [
+                        { text: "Invest in solar and wind energy", points: 15, result: "win" },
+                        { text: "Provide incentives for renewable energy projects", points: 10, result: "win" },
+                        { text: "Continue reliance on fossil fuels", points: 5, result: "neutral" },
+                        { text: "Delay renewable investments", points: -10, result: "lose" }
+                    ]
+                },
+                {
+                    title: "Scenario 4: Urban Air Quality",
+                    description: "Air pollution in cities is a major concern. What actions will you take?",
+                    choices: [
+                        { text: "Implement stricter vehicle emissions standards", points: 15, result: "win" },
+                        { text: "Promote public transport usage", points: 10, result: "win" },
+                        { text: "Encourage electric vehicles", points: 5, result: "neutral" },
+                        { text: "Ignore the issue", points: -10, result: "lose" }
+                    ]
+                },
+                {
+                    title: "Scenario 5: Plastic Waste Management",
+                    description: "How will you address the growing issue of plastic waste?",
+                    choices: [
+                        { text: "Ban single-use plastics", points: 15, result: "win" },
+                        { text: "Promote recycling programs", points: 10, result: "win" },
+                        { text: "Raise awareness about plastic waste", points: 5, result: "neutral" },
+                        { text: "Ignore the issue", points: -10, result: "lose" }
+                    ]
+                },
+                {
+                    title: "Scenario 6: Sustainable Agriculture",
+                    description: "What measures will you implement to promote sustainable agriculture?",
+                    choices: [
+                        { text: "Support organic farming practices", points: 15, result: "win" },
+                        { text: "Provide training for farmers on sustainability", points: 10, result: "win" },
+                        { text: "Focus on maximizing production", points: 5, result: "neutral" },
+                        { text: "Neglect environmental impacts", points: -10, result: "lose" }
+                    ]
+                },
+                {
+                    title: "Scenario 7: Biodiversity Protection",
+                    description: "How will you protect Italy's biodiversity?",
+                    choices: [
+                        { text: "Establish protected areas", points: 15, result: "win" },
+                        { text: "Support wildlife conservation efforts", points: 10, result: "win" },
+                        { text: "Conduct studies on endangered species", points: 5, result: "neutral" },
+                        { text: "Prioritize development over conservation", points: -10, result: "lose" }
+                    ]
+                },
+                {
+                    title: "Scenario 8: Water Resource Management",
+                    description: "How will you manage water resources in light of climate change?",
+                    choices: [
+                        { text: "Invest in water conservation technologies", points: 15, result: "win" },
+                        { text: "Promote efficient irrigation practices", points: 10, result: "win" },
+                        { text: "Delay investments in water management", points: 5, result: "neutral" },
+                        { text: "Ignore the issue", points: -10, result: "lose" }
+                    ]
+                },
+                {
+                    title: "Scenario 9: Climate Change Adaptation",
+                    description: "What strategies will you implement to adapt to climate change impacts?",
+                    choices: [
+                        { text: "Develop a national climate action plan", points: 15, result: "win" },
+                        { text: "Increase funding for climate research", points: 10, result: "win" },
+                        { text: "Focus on short-term solutions", points: 5, result: "neutral" },
+                        { text: "Neglect climate adaptation", points: -10, result: "lose" }
+                    ]
+                },
+                {
+                    title: "Scenario 10: Community Engagement",
+                    description: "How will you engage local communities in sustainability efforts?",
+                    choices: [
+                        { text: "Create community sustainability programs", points: 15, result: "win" },
+                        { text: "Involve communities in decision-making", points: 10, result: "win" },
+                        { text: "Raise awareness about local issues", points: 5, result: "neutral" },
+                        { text: "Ignore community involvement", points: -10, result: "lose" }
+                    ]
+                }
+            ],
+
+            "South Korea": [
+                {
+                    title: "Scenario 1: Air Quality Improvement",
+                    description: "Seoul faces significant air pollution. How will you address it?",
+                    choices: [
+                        { text: "Enhance public transport systems", points: 15, result: "win" },
+                        { text: "Implement strict emissions regulations", points: 10, result: "win" },
+                        { text: "Encourage electric vehicles", points: 5, result: "neutral" },
+                        { text: "Ignore the issue", points: -10, result: "lose" }
+                    ]
+                },
+                {
+                    title: "Scenario 2: Waste Management",
+                    description: "How will you tackle the rising waste crisis in urban areas?",
+                    choices: [
+                        { text: "Implement recycling programs", points: 15, result: "win" },
+                        { text: "Ban single-use plastics", points: 10, result: "win" },
+                        { text: "Raise awareness on waste reduction", points: 5, result: "neutral" },
+                        { text: "Neglect the issue", points: -10, result: "lose" }
+                    ]
+                },
+                {
+                    title: "Scenario 3: Green Spaces in Cities",
+                    description: "How will you increase green spaces in urban areas?",
+                    choices: [
+                        { text: "Develop new parks and green areas", points: 15, result: "win" },
+                        { text: "Encourage rooftop gardens", points: 10, result: "win" },
+                        { text: "Support urban agriculture initiatives", points: 5, result: "neutral" },
+                        { text: "Focus solely on development", points: -10, result: "lose" }
+                    ]
+                },
+                {
+                    title: "Scenario 4: Renewable Energy Adoption",
+                    description: "How do you promote renewable energy in South Korea?",
+                    choices: [
+                        { text: "Invest heavily in solar and wind energy", points: 15, result: "win" },
+                        { text: "Provide incentives for green technology", points: 10, result: "win" },
+                        { text: "Delay renewable projects for cost reasons", points: 5, result: "neutral" },
+                        { text: "Continue reliance on fossil fuels", points: -10, result: "lose" }
+                    ]
+                },
+                {
+                    title: "Scenario 5: Biodiversity Conservation",
+                    description: "What strategies will you implement for biodiversity conservation?",
+                    choices: [
+                        { text: "Establish protected wildlife areas", points: 15, result: "win" },
+                        { text: "Support conservation NGOs", points: 10, result: "win" },
+                        { text: "Raise public awareness about biodiversity", points: 5, result: "neutral" },
+                        { text: "Prioritize development over conservation", points: -10, result: "lose" }
+                    ]
+                },
+                {
+                    title: "Scenario 6: Community Involvement",
+                    description: "How will you engage communities in environmental initiatives?",
+                    choices: [
+                        { text: "Create community engagement programs", points: 15, result: "win" },
+                        { text: "Involve locals in decision-making", points: 10, result: "win" },
+                        { text: "Host workshops on sustainability", points: 5, result: "neutral" },
+                        { text: "Neglect community feedback", points: -10, result: "lose" }
+                    ]
+                },
+                {
+                    title: "Scenario 7: Climate Change Education",
+                    description: "What measures will you take to educate the public on climate change?",
+                    choices: [
+                        { text: "Launch educational campaigns in schools", points: 15, result: "win" },
+                        { text: "Host public seminars and workshops", points: 10, result: "win" },
+                        { text: "Distribute informational brochures", points: 5, result: "neutral" },
+                        { text: "Ignore education efforts", points: -10, result: "lose" }
+                    ]
+                },
+                {
+                    title: "Scenario 8: Urban Development Planning",
+                    description: "How will you ensure sustainable urban development?",
+                    choices: [
+                        { text: "Implement sustainable building codes", points: 15, result: "win" },
+                        { text: "Encourage mixed-use developments", points: 10, result: "win" },
+                        { text: "Prioritize economic growth over sustainability", points: 5, result: "neutral" },
+                        { text: "Neglect urban planning considerations", points: -10, result: "lose" }
+                    ]
+                },
+                {
+                    title: "Scenario 9: Food Security",
+                    description: "How will you address food security in South Korea?",
+                    choices: [
+                        { text: "Promote local food production", points: 15, result: "win" },
+                        { text: "Support small-scale farmers", points: 10, result: "win" },
+                        { text: "Increase imports to meet demand", points: 5, result: "neutral" },
+                        { text: "Ignore food security issues", points: -10, result: "lose" }
+                    ]
+                },
+                {
+                    title: "Scenario 10: Climate Resilience",
+                    description: "How will you enhance climate resilience in your country?",
+                    choices: [
+                        { text: "Develop comprehensive climate action plans", points: 15, result: "win" },
+                        { text: "Invest in research and innovation", points: 10, result: "win" },
+                        { text: "Focus on short-term fixes", points: 5, result: "neutral" },
+                        { text: "Neglect climate challenges", points: -10, result: "lose" }
+                    ]
+                }
+            ],
+
+            "Turkey": [
+                {
+                    title: "Scenario 1: Water Resource Management",
+                    description: "Turkey faces challenges with water scarcity. How will you manage water resources?",
+                    choices: [
+                        { text: "Invest in water-saving technologies", points: 15, result: "win" },
+                        { text: "Implement strict water usage regulations", points: 10, result: "win" },
+                        { text: "Rely on imports for water supply", points: 5, result: "neutral" },
+                        { text: "Ignore the issue", points: -10, result: "lose" }
+                    ]
+                },
+                {
+                    title: "Scenario 2: Air Quality Improvement",
+                    description: "Air pollution in urban areas is a significant concern. What do you do?",
+                    choices: [
+                        { text: "Enhance public transportation systems", points: 15, result: "win" },
+                        { text: "Regulate industrial emissions", points: 10, result: "win" },
+                        { text: "Encourage the use of electric vehicles", points: 5, result: "neutral" },
+                        { text: "Do nothing", points: -10, result: "lose" }
+                    ]
+                },
+                {
+                    title: "Scenario 3: Earthquake Preparedness",
+                    description: "Turkey is prone to earthquakes. How will you prepare communities?",
+                    choices: [
+                        { text: "Invest in earthquake-resistant buildings", points: 15, result: "win" },
+                        { text: "Conduct community drills and education", points: 10, result: "win" },
+                        { text: "Rely on emergency response after the fact", points: 5, result: "neutral" },
+                        { text: "Ignore the risk", points: -10, result: "lose" }
+                    ]
+                },
+                {
+                    title: "Scenario 4: Biodiversity Conservation",
+                    description: "How will you protect Turkey's rich biodiversity?",
+                    choices: [
+                        { text: "Create more national parks", points: 15, result: "win" },
+                        { text: "Promote awareness campaigns", points: 10, result: "win" },
+                        { text: "Limit hunting regulations", points: 5, result: "neutral" },
+                        { text: "Ignore the issue", points: -10, result: "lose" }
+                    ]
+                },
+                {
+                    title: "Scenario 5: Renewable Energy Investment",
+                    description: "How will you increase renewable energy production?",
+                    choices: [
+                        { text: "Invest in wind and solar farms", points: 15, result: "win" },
+                        { text: "Provide incentives for green energy use", points: 10, result: "win" },
+                        { text: "Continue reliance on fossil fuels", points: 5, result: "neutral" },
+                        { text: "Delay changes due to costs", points: -10, result: "lose" }
+                    ]
+                },
+                {
+                    title: "Scenario 6: Tourism Sustainability",
+                    description: "How will you promote sustainable tourism in Turkey?",
+                    choices: [
+                        { text: "Encourage eco-friendly tourism practices", points: 15, result: "win" },
+                        { text: "Limit tourist numbers in popular areas", points: 10, result: "win" },
+                        { text: "Focus solely on economic gain from tourism", points: 5, result: "neutral" },
+                        { text: "Neglect sustainability in tourism", points: -10, result: "lose" }
+                    ]
+                },
+                {
+                    title: "Scenario 7: Waste Management Improvement",
+                    description: "How will you tackle waste management issues in urban areas?",
+                    choices: [
+                        { text: "Implement recycling programs", points: 15, result: "win" },
+                        { text: "Increase waste disposal regulations", points: 10, result: "win" },
+                        { text: "Promote public awareness of waste issues", points: 5, result: "neutral" },
+                        { text: "Ignore waste management problems", points: -10, result: "lose" }
+                    ]
+                },
+                {
+                    title: "Scenario 8: Urban Green Spaces",
+                    description: "How will you increase green spaces in cities?",
+                    choices: [
+                        { text: "Invest in parks and green areas", points: 15, result: "win" },
+                        { text: "Encourage community gardens", points: 10, result: "win" },
+                        { text: "Prioritize urban development over green spaces", points: 5, result: "neutral" },
+                        { text: "Neglect urban greenery", points: -10, result: "lose" }
+                    ]
+                },
+                {
+                    title: "Scenario 9: Climate Change Action",
+                    description: "What strategies will you implement to combat climate change?",
+                    choices: [
+                        { text: "Develop a national climate action plan", points: 15, result: "win" },
+                        { text: "Invest in climate research", points: 10, result: "win" },
+                        { text: "Focus on short-term gains", points: 5, result: "neutral" },
+                        { text: "Ignore climate change impacts", points: -10, result: "lose" }
+                    ]
+                },
+                {
+                    title: "Scenario 10: Food Security Enhancement",
+                    description: "How will you enhance food security in Turkey?",
+                    choices: [
+                        { text: "Promote sustainable agricultural practices", points: 15, result: "win" },
+                        { text: "Support local farmers", points: 10, result: "win" },
+                        { text: "Rely on imports for food supply", points: 5, result: "neutral" },
+                        { text: "Neglect food security issues", points: -10, result: "lose" }
+                    ]
+                }
+            ],
+
+            "Argentina": [
+                {
+                    title: "Scenario 1: Climate Change Impact",
+                    description: "Argentina faces severe effects of climate change. How do you respond?",
+                    choices: [
+                        { text: "Develop a national climate adaptation strategy", points: 15, result: "win" },
+                        { text: "Invest in renewable energy", points: 10, result: "win" },
+                        { text: "Focus on immediate economic issues", points: 5, result: "neutral" },
+                        { text: "Ignore climate change impacts", points: -10, result: "lose" }
+                    ]
+                },
+                {
+                    title: "Scenario 2: Biodiversity Conservation",
+                    description: "How will you protect Argentina's diverse ecosystems?",
+                    choices: [
+                        { text: "Establish more protected areas", points: 15, result: "win" },
+                        { text: "Promote conservation awareness", points: 10, result: "win" },
+                        { text: "Limit hunting and fishing regulations", points: 5, result: "neutral" },
+                        { text: "Neglect biodiversity issues", points: -10, result: "lose" }
+                    ]
+                },
+                {
+                    title: "Scenario 3: Deforestation Control",
+                    description: "Deforestation is a pressing issue in Argentina. What actions will you take?",
+                    choices: [
+                        { text: "Implement strict logging regulations", points: 15, result: "win" },
+                        { text: "Promote reforestation projects", points: 10, result: "win" },
+                        { text: "Prioritize agricultural expansion", points: 5, result: "neutral" },
+                        { text: "Ignore deforestation concerns", points: -10, result: "lose" }
+                    ]
+                },
+                {
+                    title: "Scenario 4: Water Resource Management",
+                    description: "Water scarcity is affecting agricultural productivity. How will you manage water resources?",
+                    choices: [
+                        { text: "Invest in irrigation efficiency", points: 15, result: "win" },
+                        { text: "Promote water conservation", points: 10, result: "win" },
+                        { text: "Rely on water imports", points: 5, result: "neutral" },
+                        { text: "Neglect water issues", points: -10, result: "lose" }
+                    ]
+                },
+                {
+                    title: "Scenario 5: Urban Pollution Control",
+                    description: "Urban areas are facing increasing pollution levels. How will you address this?",
+                    choices: [
+                        { text: "Implement stricter emission controls", points: 15, result: "win" },
+                        { text: "Promote public transportation use", points: 10, result: "win" },
+                        { text: "Encourage recycling programs", points: 5, result: "neutral" },
+                        { text: "Ignore urban pollution", points: -10, result: "lose" }
+                    ]
+                },
+                {
+                    title: "Scenario 6: Agricultural Sustainability",
+                    description: "How will you ensure sustainable agriculture practices?",
+                    choices: [
+                        { text: "Promote organic farming initiatives", points: 15, result: "win" },
+                        { text: "Support local farmers with education", points: 10, result: "win" },
+                        { text: "Focus on high-yield crops", points: 5, result: "neutral" },
+                        { text: "Neglect sustainable practices", points: -10, result: "lose" }
+                    ]
+                },
+                {
+                    title: "Scenario 7: Renewable Energy Investment",
+                    description: "How will you boost renewable energy usage in Argentina?",
+                    choices: [
+                        { text: "Invest in wind and solar energy projects", points: 15, result: "win" },
+                        { text: "Provide incentives for green energy", points: 10, result: "win" },
+                        { text: "Continue reliance on fossil fuels", points: 5, result: "neutral" },
+                        { text: "Delay investments due to costs", points: -10, result: "lose" }
+                    ]
+                },
+                {
+                    title: "Scenario 8: Disaster Preparedness",
+                    description: "Argentina faces natural disasters. How will you prepare communities?",
+                    choices: [
+                        { text: "Invest in emergency response infrastructure", points: 15, result: "win" },
+                        { text: "Conduct community training for disaster response", points: 10, result: "win" },
+                        { text: "Rely on external aid after disasters", points: 5, result: "neutral" },
+                        { text: "Ignore disaster risks", points: -10, result: "lose" }
+                    ]
+                },
+                {
+                    title: "Scenario 9: Economic Sustainability",
+                    description: "How will you promote economic sustainability in Argentina?",
+                    choices: [
+                        { text: "Encourage local businesses and markets", points: 15, result: "win" },
+                        { text: "Invest in sustainable tourism", points: 10, result: "win" },
+                        { text: "Focus on short-term economic gains", points: 5, result: "neutral" },
+                        { text: "Neglect economic sustainability", points: -10, result: "lose" }
+                    ]
+                },
+                {
+                    title: "Scenario 10: Education and Awareness",
+                    description: "How will you educate the public on environmental issues?",
+                    choices: [
+                        { text: "Launch nationwide awareness campaigns", points: 15, result: "win" },
+                        { text: "Integrate environmental education in schools", points: 10, result: "win" },
+                        { text: "Host community workshops", points: 5, result: "neutral" },
+                        { text: "Neglect education on environmental issues", points: -10, result: "lose" }
+                    ]
+                }
+            ],
+
+            "France": [
+                {
+                    title: "Scenario 1: Climate Change Mitigation",
+                    description: "France aims to meet its climate targets. What steps will you take?",
+                    choices: [
+                        { text: "Invest in renewable energy sources", points: 15, result: "win" },
+                        { text: "Implement carbon taxes", points: 10, result: "win" },
+                        { text: "Focus on economic growth over environment", points: 5, result: "neutral" },
+                        { text: "Ignore climate change issues", points: -10, result: "lose" }
+                    ]
+                },
+                {
+                    title: "Scenario 2: Biodiversity Protection",
+                    description: "How will you protect France's biodiversity?",
+                    choices: [
+                        { text: "Create more nature reserves", points: 15, result: "win" },
+                        { text: "Promote biodiversity awareness programs", points: 10, result: "win" },
+                        { text: "Restrict hunting and fishing regulations", points: 5, result: "neutral" },
+                        { text: "Neglect biodiversity issues", points: -10, result: "lose" }
+                    ]
+                },
+                {
+                    title: "Scenario 3: Urban Air Quality",
+                    description: "Air pollution in cities is a concern. How will you address this?",
+                    choices: [
+                        { text: "Enhance public transportation systems", points: 15, result: "win" },
+                        { text: "Implement low-emission zones", points: 10, result: "win" },
+                        { text: "Encourage the use of electric vehicles", points: 5, result: "neutral" },
+                        { text: "Do nothing", points: -10, result: "lose" }
+                    ]
+                },
+                {
+                    title: "Scenario 4: Sustainable Agriculture",
+                    description: "How will you promote sustainable agricultural practices in France?",
+                    choices: [
+                        { text: "Support organic farming initiatives", points: 15, result: "win" },
+                        { text: "Encourage local markets", points: 10, result: "win" },
+                        { text: "Focus solely on productivity", points: 5, result: "neutral" },
+                        { text: "Neglect sustainability", points: -10, result: "lose" }
+                    ]
+                },
+                {
+                    title: "Scenario 5: Renewable Energy Expansion",
+                    description: "How will you increase the use of renewable energy?",
+                    choices: [
+                        { text: "Invest in wind and solar projects", points: 15, result: "win" },
+                        { text: "Provide incentives for green technology", points: 10, result: "win" },
+                        { text: "Continue reliance on nuclear energy", points: 5, result: "neutral" },
+                        { text: "Delay changes due to costs", points: -10, result: "lose" }
+                    ]
+                },
+                {
+                    title: "Scenario 6: Water Resource Management",
+                    description: "How will you address water scarcity issues?",
+                    choices: [
+                        { text: "Invest in water-saving technologies", points: 15, result: "win" },
+                        { text: "Implement strict water regulations", points: 10, result: "win" },
+                        { text: "Rely on water imports", points: 5, result: "neutral" },
+                        { text: "Ignore the issue", points: -10, result: "lose" }
+                    ]
+                },
+                {
+                    title: "Scenario 7: Climate Education",
+                    description: "How will you promote climate education among citizens?",
+                    choices: [
+                        { text: "Launch educational campaigns in schools", points: 15, result: "win" },
+                        { text: "Integrate climate education in curricula", points: 10, result: "win" },
+                        { text: "Host public workshops", points: 5, result: "neutral" },
+                        { text: "Neglect education on climate issues", points: -10, result: "lose" }
+                    ]
+                },
+                {
+                    title: "Scenario 8: Urban Green Spaces",
+                    description: "How will you enhance green spaces in urban areas?",
+                    choices: [
+                        { text: "Invest in parks and gardens", points: 15, result: "win" },
+                        { text: "Encourage community gardening", points: 10, result: "win" },
+                        { text: "Prioritize urban development over greenery", points: 5, result: "neutral" },
+                        { text: "Neglect urban green areas", points: -10, result: "lose" }
+                    ]
+                },
+                {
+                    title: "Scenario 9: Disaster Preparedness",
+                    description: "How will you prepare for natural disasters in France?",
+                    choices: [
+                        { text: "Invest in emergency infrastructure", points: 15, result: "win" },
+                        { text: "Conduct community training", points: 10, result: "win" },
+                        { text: "Rely on international aid", points: 5, result: "neutral" },
+                        { text: "Ignore disaster risks", points: -10, result: "lose" }
+                    ]
+                },
+                {
+                    title: "Scenario 10: Eco-Tourism Promotion",
+                    description: "How will you promote eco-tourism in France?",
+                    choices: [
+                        { text: "Develop eco-friendly travel options", points: 15, result: "win" },
+                        { text: "Promote natural heritage sites", points: 10, result: "win" },
+                        { text: "Focus solely on economic gain", points: 5, result: "neutral" },
+                        { text: "Neglect eco-tourism potential", points: -10, result: "lose" }
+                    ]
+                }
+            ],
+
+            "Philippines": [
+                {
+                    title: "Scenario 1: Climate Change Resilience",
+                    description: "The Philippines is vulnerable to climate change. How will you enhance resilience?",
+                    choices: [
+                        { text: "Develop a national climate adaptation plan", points: 15, result: "win" },
+                        { text: "Invest in disaster preparedness infrastructure", points: 10, result: "win" },
+                        { text: "Focus on economic recovery only", points: 5, result: "neutral" },
+                        { text: "Ignore climate change risks", points: -10, result: "lose" }
+                    ]
+                },
+                {
+                    title: "Scenario 2: Disaster Risk Reduction",
+                    description: "Natural disasters are frequent. What measures will you implement?",
+                    choices: [
+                        { text: "Invest in early warning systems", points: 15, result: "win" },
+                        { text: "Conduct community training programs", points: 10, result: "win" },
+                        { text: "Focus solely on recovery efforts", points: 5, result: "neutral" },
+                        { text: "Neglect disaster risk management", points: -10, result: "lose" }
+                    ]
+                },
+                {
+                    title: "Scenario 3: Biodiversity Conservation",
+                    description: "The Philippines is rich in biodiversity. How will you protect it?",
+                    choices: [
+                        { text: "Establish marine protected areas", points: 15, result: "win" },
+                        { text: "Promote conservation education", points: 10, result: "win" },
+                        { text: "Restrict fishing regulations", points: 5, result: "neutral" },
+                        { text: "Ignore biodiversity issues", points: -10, result: "lose" }
+                    ]
+                },
+                {
+                    title: "Scenario 4: Water Resource Management",
+                    description: "How will you tackle water scarcity in rural areas?",
+                    choices: [
+                        { text: "Implement rainwater harvesting systems", points: 15, result: "win" },
+                        { text: "Promote water conservation practices", points: 10, result: "win" },
+                        { text: "Rely on external water sources", points: 5, result: "neutral" },
+                        { text: "Neglect water resource issues", points: -10, result: "lose" }
+                    ]
+                },
+                {
+                    title: "Scenario 5: Urban Pollution Control",
+                    description: "Urban pollution is a concern. What actions will you take?",
+                    choices: [
+                        { text: "Implement stricter waste disposal regulations", points: 15, result: "win" },
+                        { text: "Promote recycling programs", points: 10, result: "win" },
+                        { text: "Encourage public transportation use", points: 5, result: "neutral" },
+                        { text: "Ignore urban pollution", points: -10, result: "lose" }
+                    ]
+                },
+                {
+                    title: "Scenario 6: Renewable Energy Investment",
+                    description: "How will you enhance renewable energy production?",
+                    choices: [
+                        { text: "Invest in solar and wind energy projects", points: 15, result: "win" },
+                        { text: "Provide incentives for green energy usage", points: 10, result: "win" },
+                        { text: "Continue reliance on fossil fuels", points: 5, result: "neutral" },
+                        { text: "Delay renewable investments due to costs", points: -10, result: "lose" }
+                    ]
+                },
+                {
+                    title: "Scenario 7: Sustainable Tourism Development",
+                    description: "How will you promote sustainable tourism?",
+                    choices: [
+                        { text: "Support eco-friendly tourism initiatives", points: 15, result: "win" },
+                        { text: "Promote local culture and heritage", points: 10, result: "win" },
+                        { text: "Focus solely on profit from tourism", points: 5, result: "neutral" },
+                        { text: "Neglect tourism sustainability", points: -10, result: "lose" }
+                    ]
+                },
+                {
+                    title: "Scenario 8: Community Education on Climate Change",
+                    description: "How will you raise awareness about climate issues?",
+                    choices: [
+                        { text: "Launch educational campaigns", points: 15, result: "win" },
+                        { text: "Integrate climate education in schools", points: 10, result: "win" },
+                        { text: "Host community workshops", points: 5, result: "neutral" },
+                        { text: "Neglect education on climate issues", points: -10, result: "lose" }
+                    ]
+                },
+                {
+                    title: "Scenario 9: Forest Conservation",
+                    description: "How will you protect the Philippine forests?",
+                    choices: [
+                        { text: "Implement reforestation programs", points: 15, result: "win" },
+                        { text: "Strengthen logging regulations", points: 10, result: "win" },
+                        { text: "Promote sustainable forest management", points: 5, result: "neutral" },
+                        { text: "Ignore deforestation issues", points: -10, result: "lose" }
+                    ]
+                },
+                {
+                    title: "Scenario 10: Climate Change Legislation",
+                    description: "What policies will you promote to combat climate change?",
+                    choices: [
+                        { text: "Introduce strict environmental regulations", points: 15, result: "win" },
+                        { text: "Advocate for international climate agreements", points: 10, result: "win" },
+                        { text: "Focus on short-term economic gains", points: 5, result: "neutral" },
+                        { text: "Neglect climate legislation", points: -10, result: "lose" }
+                    ]
+                }
+            ]
+
+
+        }
+
+
+        let score = 100;
+        let teamName = "";
+
+        function showIntro() {
+            document.getElementById('intro-section').style.display = 'block';
+        }
+
+        function showTeamInput() {
+            document.getElementById('intro-section').style.display = 'none';
+            document.getElementById('team-section').style.display = 'block';
+        }
+
+        function setTeamName() {
+            const teamNameInput = document.getElementById('team-name').value;
+            if (teamNameInput.trim() === "") {
+                alert("Please enter team name!");
+                return; // تمنع الانتقال للخطوة التالية
+            }
+
+            teamName = teamNameInput;
+            document.getElementById('team-section').style.display = 'none';
+            showCountrySelection();
+        }
+
+
+        function showCountrySelection() {
+            document.getElementById('country-selection-section').style.display = 'block';
+            const container = document.getElementById('countries-container');
+            container.innerHTML = '';
+
+            countries.forEach(country => {
+                const card = document.createElement('div');
+                card.classList.add('country-card');
+                card.innerHTML = `<img src="${country.flag}" class="country-flag" alt="${country.name}"><h3>${country.name}</h3>
+                <div class="issues">Issues: ${country.issues.join(", ")}</div>`;
+                card.onclick = () => startGame(country.name);
+                container.appendChild(card);
+            });
+        }
+
+        function startGame(selectedCountry) {
+            const countryData = scenarios[selectedCountry];
+            document.getElementById('country-selection-section').style.display = 'none';
+            document.getElementById('game-section').style.display = 'block';
+            loadScenario(countryData[0], selectedCountry);
+        }
+
+        function loadScenario(scenario, country) {
+            document.getElementById('scenario-title').innerText = scenario.title;
+            document.getElementById('scenario-description').innerText = scenario.description;
+
+            const choicesContainer = document.getElementById('choices-container');
+            choicesContainer.innerHTML = '';
+
+            scenario.choices.forEach(choice => {
+                const button = document.createElement('button');
+                button.classList.add('choice-button');
+                button.innerText = choice.text;
+                button.onclick = () => handleChoice(choice, scenario, country);
+                choicesContainer.appendChild(button);
+            });
+        }
+
+        function handleChoice(choice, scenario, country) {
+            score += choice.points;
+            document.getElementById('score-container').innerText = `Score: ${score}`;
+
+            // Load next scenario or end game if necessary
+            const countryData = scenarios[country];
+            const currentScenarioIndex = countryData.findIndex(s => s.title === scenario.title);
+
+            if (currentScenarioIndex < countryData.length - 1) {
+                loadScenario(countryData[currentScenarioIndex + 1], country);
+            } else {
+                endGame("");
+            }
+
+            if (score <= 0) {
+                endGame("Game Over! You need to improve your strategies.");
+            }
+        }
+
+        function endGame(message) {
+            document.getElementById('game-section').style.display = 'none';
+            document.getElementById('end-section').style.display = 'block';
+            document.getElementById('end-message').innerText = message;
+            document.getElementById('final-score').innerText = `Final Score: ${score}`;
+
+            // Display final message based on score
+            if (score >= 230) {
+                document.getElementById('final-score').innerText += "\n Great success: Thanks to your wise decisions, the country was able to reduce carbon emissions by 50%, and air quality improved significantly. People are starting to live in a cleaner and more sustainable environment.";
+            } else if (score >= 200) {
+                document.getElementById('final-score').innerText += "\n artial success: Your decisions helped reduce emissions, but some decisions needed modification. The country is on its way to improving the environmental situation, but there are still challenges.";
+            } else {
+                document.getElementById('final-score').innerText += "\n Failure: Due to poor decisions, carbon emissions have increased, and the quality of life has deteriorated. The country is now suffering more from the effects of climate change, which could affect future generations.";
+            }
+        }
+
+        function restartGame() {
+            score = 100;
+            document.getElementById('end-section').style.display = 'none';
+            showCountrySelection();
+        }
+
+        function finishGame() {
+            alert("Your game is over! Depending on the decisions it made, the country either succeeded in confronting climate change or failed. Now you can think about the choices you made and see how you can be part of the solution in the real world.");
+        }
+
+        // بدء العرض التقديمي
+        showIntro();
+    </script>
+</body>
+
+</html>
